@@ -13,18 +13,49 @@
  
 
 ***
+# vi/vim编辑器
++ vim是vi的高级模式。
++ 滚屏命令：Ctrl+U/L（前滚后滚半屏）
++ 翻页命令：Ctrl+F/B（前翻后翻）
+## vi的配置文件
++ vi ~/.vimrc
++ syn on #代码高亮
++ set nu #显示行号
++ set autoindent #自动缩进
++ set smartindent #智能缩进
++ set ruler #显示光标
++ set undolevels=200 #undo的最大次数
++ set incsearch #快速查找单词
++ set ignorecase #忽略大小写
++ set hlsearch #高亮搜索结果
++ set background=bark #设置背景为bark
++ set  noerrorbells #出错不发警报
++ set tabstop=4 #设置宽度
++ set backup #设置自动备份(nobackup不启用)
++ set backupext = .bak #设置备份文件后缀
++ set backupdir = ./ #设置备份路径
 
+
+## 三种模式的使用
 |序号|	vi编辑器的应用|	
 |:--|:--|
-|1|	命令模式	Esc|
+|1|命令模式|Esc|
 |u:|撤销操作|
 |G:|调到最后一行|
 |yy:|复制光标所在行|
 |nyy:|复制n行|
 |p:|粘贴|
+|hkjk|方向键|
+|L|移到行首|
+|$|移到行尾|
+|A|行尾追加|
+|dd|删除一行|
+|ndd|删除N行|
+|np|撤销上次的dd命令，最多9次|
 |ndd:|从光标所在位置删除n行|
+|.|重复操作|
 |编辑模式|	a/i|
-|底线模式	|在命令模式下打一个:|
+|末线模式	|在命令模式下打一个:|
 |	:wq |保存退出|
 |	:q! |强制退出|
 |vi |文件名称|
@@ -70,31 +101,75 @@ alias edhttp='vi /etc/httpd/conf/httpd.conf"
 +	命令执行与中断
  *	Ctrl+C终断程序执行 ctrl+Z中断任务，将任务挂起 ctrl+D表示EOF(-1)用于输入参数之后表示结束
 ## **Linux的文件知识**
-   + 特点：
-    * 文件名支持265个字符，大小写敏感。
-    * 任何软件和I/O设备都被视为文件
-    * 没有盘符，不同硬件分块挂载在目录下。
-    * Linu无拓展符，机器不识别但可给用户提示文件类型
-   + 类型：
-    * 普通文件(-)：红黑(rar) 绿色(exe)
-    * 目录文件(D/d)：存放文件名及其信息。
-    * 链接文件(l)：指向真实文件的链接。
-    * 设备文件(B/C)：位于/dev目录下。
-    * 管道文件(P)：用于进程信息传递。
-  + drwxr-xr-x(其中的为文件类型，rwx为文件所有者权限，r-x为所以组权限，r-x为其他用户权限)
+### 特点：
+   + 文件名支持265个字符，大小写敏感。
+   + 任何软件和I/O设备都被视为文件
+   + 没有盘符，不同硬件分块挂载在目录下。 
+   +  Linu无拓展符，机器不识别但可给用户提示文件类型
+### 类型：
+   + 普通文件(-)：红黑(rar) 绿色(exe)
+   + 目录文件(D/d)：存放文件名及其信息。
+   + 链接文件(l)：指向真实文件的链接。
+   + 设备文件(B/C)：位于/dev目录下。
+   + 管道文件(P)：用于进程信息传递。
+### 权限
+#### 字母法
++ r w x s(执行文件的用户暂时拥有文件所有权)
+#### 数字法
++ 以八进制数表示，0(无权限) 1(x) 2(w) 4(r)，权限相加后得一个数子，三个数字为一组依次表示文件属主u、同组用户(g)、其他用户(o)的权限。
 
+
++ drwxr-xr-x(其中的为文件类型，rwx为文件所有者权限，r-x为所以组权限，r-x为其他用户权限)x(eXecute，执行)
++ 1.**简介普通文件的rwx权限**
+r(Read，读取)：对文件而言，具有读取文件内容的权限；
+w(Write,写入)：对文件而言，具有新增、修改文件内容的权限；
+x(eXecute，执行)：对文件而言，具有执行文件的权限。
+
++ **简介目录的rwx权限**
+r(Read，读取)：拥有此权限表示可以读取目录结构列表，也就是说可以查看目录下的文件名和子目录名。
+w(Write,写入)：拥有此权限表示具有更改该目录结构列表的权限。
+x(eXecute，执行)：拥有目录的x权限表示用户可以进入该目录成为工作目录。
+
++ **简介目录w权限**
+w(Write,写入)：拥有此权限表示具有更改该目录结构列表的权限。
+1.在该目录下新建新的文件或子目录。
+2.删除该目录下已经存在的文件或子目录。
+3.将该目录下已经存在的文件或子目录进行重命名。
+4.转移该目录内的文件或子目录的位置。
+### /etc/passwd文件。
++ 该文件保存用户帐户信息。
++ 该文件的每一行保存一个用户的数据。
++ 用户数据按域以冒号分割。
++ 每一行的格式如下：
+username：password:uid:gid:userinfo:home:shell
+### /etc/group文件。
++ 该文件保存组账户的信息。
++ 该文件的每一行保存一个组群的数据。
++ 组群数据按域以冒号分割。
++ 每一行的格式如下：
+group_name:group_password:group_id:group_members
 
 # 相关命令
-1. 输入su然后输入root密码可切换到root用户。
-2. 关机命令：
- 重启命令：reboot, init 6, systemctl reboot
- 关机命令：poweroff, init 6, systemctl poweroff
-2.	注销用户命令：logout，退出控制台命令：exit
-3.	Showdown命令：（-t在改变runlevel之前告诉init多久后关机 -r重启 -k发送警告给登录者 -h关机后关电 -f重启时忽略fsck -F重启时强迫fsck -time设定关机前的时间）showdown -h 20:54
-4.	Haltreboot命令（就是调用showdown -h）：
--n防止sync系统的调用 -w写wtmp记录 -d不写wtmp记录 -f不调用showdown而关机 -I关机前断网 -p默认选项
-5. init命令
-  七个级别，init 0关机 init 6 重启
+## chmod命令，更改权限
++ 
+  - chmod命令用于改变文件/目录的访问权限；
+  - chmod命令有两种用法，一种是包含字母和操作符表达式的文字设定法；另一种是包含数字的数字设定法。
++ chomd [who] [+|-|=] [mode] + filename
+  - [who]: u:文件属主 g:同组用户  a:所有用户  o:其他用户
+  - [mode]: r w x(执行) s(执行文件者有文件拥有者的权限)
+  - 操作符：+添加权限、-减少、=重新赋给权限
+
+## umask命令，更改默认权限
++ umask： 显示文件或目录的默认权限，
++ umask 数字：设置默认权限，数字为补码，以888-X后可得实际权限，文件创建时不可有可执行权限故最高为6，路径最高为7
+
+
+## chown命令，更改属主
++ chown [option] [user/group] filename //
+  - option：-R递归更改  -v显示过程
+  - user/group：更改到的属主
+  - filename：支持通配符
+
 ## **cd命令：**
    + cd 路径(进入该目录)
    + linux的：
@@ -108,65 +183,215 @@ alias edhttp='vi /etc/httpd/conf/httpd.conf"
      *   cd ../..返回上上级目录
 
 
-1.  **ls命令（查看当前目录下的文件）**
-    + -a 查看所有文件
-    + -h（通常与L连用） 将文件大小通过我们容易观察的单位显示
-    + -l 以列表形式展示文件
-    + 
-4. **显示文件内容(cat，more，less，tail)：**
-   + cat：显示文件也可用来连接文件。
-   + more：按enter或space进入下一行，P&C清屏，**S可压缩多行空白行为一行**，f显示文件名和行数。
-   + less：Page Up 上翻页 Page Down下翻页
-   + head。tail显示头（尾）10行	
-5. **文件内容查询grep "str"  filename**
-   + i(比较时不区分大小写) c(只显示匹配行数) v(反向匹配) x(完全匹配) n(输出前加上行号)
-6. **文件查询三大命令**
-   + find文件查询：
-     - -a(and) 
-     - -o(or) 
-     - -name(匹配字符串可使用通配符*？) 
-     - -Inname(匹配字符串的链接文件可用通配符) 
-     - -type	查找某一类型的文件。
-     - -print	find 命令将匹配的文件输出到标准输出
-     - -exec	find 命令对匹配的文件执行该参数所给出的 shell 命令
-   + whereis 文件名：只能搜索二进制文件（-b），man 帮助文件（-m）和源代码文件（-s）
-   + which：，我们**通常使用 which 来确定是否安装了某个指定的程序**，因为它只从 PATH 环境变量指定的路径中去搜索命令并且返回第一个搜索到的结果
-   + locate：locate /etc/sh查找/etc下的sh开头的文件。又快又全。
-    -使用 locate 命令查找文件也不会遍历硬盘，它通过查询 /var/lib/mlocate/mlocate.db 数据库来检索信息。不过这个数据库也不是实时更新的，系统会使用定时任务每天自动执行 updatedb 命令来更新数据库。所以有时候你刚添加的文件，它可能会找不到，需要手动执行一次 updatedb 命令（在我们的环境中必须先执行一次该命令）。注意这个命令也不是内置的命令。
-    - 在部分环境中需要手动安装，然后执行更新。
+##  ls命令（查看当前目录下的文件）
++ -a 查看所有文件
++ -h（通常与L连用） 将文件大小通过我们容易观察的单位显示
++ -l 以列表形式展示文件
++ 
+##  显示文件内容(cat，more，less，tail)：
++ cat：显示文件也可用来连接文件。
++ more：按enter或space进入下一行，P&C清屏，**S可压缩多行空白行为一行**，f显示文件名和行数。
++ less：Page Up 上翻页 Page Down下翻页
++ head。tail显示头（尾）10行	
+## 文件内容查询grep "str"  filename
++ i(比较时不区分大小写) c(只显示匹配行数) v(反向匹配) x(完全匹配) n(输出前加上行号)
+## 文件查询三大命令
+### find文件查询：
+   - -a(and)
+   - -o(or) 
+   - -name(匹配字符串可使用通配符*？) 
+   - -Inname(匹配字符串的链接文件可用通配符) 
+   - -type	查找某一类型的文件。
+   - -print	find 命令将匹配的文件输出到标准输出
+   - -exec	find 命令对匹配的文件执行该参数所给出的 shell 命令
+### whereis 文件名：只能搜索二进制文件（-b），man 帮助文件（-m）和源代码文件（-s）
++ which：，我们**通常使用 which 来确定是否安装了某个指定的程序**，因为它只从 PATH 环境变量指定的路径中去搜索命令并且返回第一个搜索到的结果
+### locate：locate /etc/sh查找/etc下的sh开头的文件。又快又全。
+   -使用 locate 命令查找文件也不会遍历硬盘，它通过查询 /var/lib/mlocate/mlocate.db 数据库来检索信息。不过这个数据库也不是实时更新的，系统会使用定时任务每天自动执行 updatedb 命令来更新数据库。所以有时候你刚添加的文件，它可能会找不到，需要手动执行一次 updatedb 命令（在我们的环境中必须先执行一次该命令）。注意这个命令也不是内置的命令。
+   - 在部分环境中需要手动安装，然后执行更新。
       sudo apt-get update
       sudo apt-get install locate
       sudo updatedb
-7. **文件三大命令mv cp rm**
-   + mv [filen_ame|file_dir]  [filen_ame|file_dir]当地二个数据为文件名时，为重命名。-i可提示移动 -f不询问移动
-   + cp [filen_ame|file_dir]  [filen_ame|file_dir] -a保留一切 -d复制时保留链接 -i/f -p复制修改时间和权限 -r递归复制 -l链接文件
-   + rm [file_dir] -r递归删除文件路径 -i/f
-   + touch 文件名   创建文件，一次性可以创建多个文件，名称用空格隔开
-8. **文件路径的创建和删除**
-   + mkdir  -p递归创建  -v显示创建 -m设置权限也可用chmod命令
-   + rmir -p递归删除
-9. **xargs 命令**
-    + -n	指定每行最大的参数数量
-    + -d	指定分隔符
-10. **wc命令**
-    + -c	统计字节数
-    + -l	统计行数eg：wc -l c.txt
-11. **grep命令**
-    + -i	忽略大小写的不同，所以大小写视为相同
-    + -r	递归搜索eg：grep -r "main()".
-    + -v	反向选择，打印不匹配的行
-    + -c	计算找到‘搜寻字符串’（即 pattern）的次数
-    + eg：grep "root" /etc/passwd --color=auto(--color=auto为颜色)
-12. **comm [选项] 文件 1 文件 2**
-    + -1不输出文件 1 特有的行
-    + -2不输出文件 2 特有的行
-    + -3不输出文件 1，2 特有的行
-13. 
-11.	解压缩：
-12.	tar -xzvf  压缩包的路径  -C 目标路径
-13.	Linux中的补全建： Tab
-14.	cat  文件名称   查看文件的内容
-15. **tree**列出一个文件夹下的所有子文件夹和文件（以树形结构来进行列出）
-16. 
+## 文件三大命令mv cp rm
++ mv [filen_ame|file_dir]  [filen_ame|file_dir]
+  - 当地二个数据为文件名时，为重命名。
+  - -i可提示移动 
+  - -f不询问移动
++ cp [filen_ame|file_dir]  [filen_ame|file_dir] 
+  - -a保留一切 
+  - -d复制时保留链接 
+  - -i/f:复制前询问/不询问 
+  - -p复制修改时间和权限 
+  - -r递归复制 
+  - -l链接文件
++ rm [file_dir] 
+  - -r递归删除文件路径 
+ - -i/f:删除前询问/不询问 
++ touch 文件名   创建文件，一次性可以创建多个文件，名称用空格隔开
+## mkdir文件路径的创建和删除 
++ mkdir(必须有其父目录的w权限)
+  - -p递归创建 
+  - -v显示创建 
+  - -m设置权限也可用chmod命令
++ rmdir -p递归删除
+
+## xargs 命令， 
++ -n	指定每行最大的参数数量
++ -d	指定分隔符
+
+## grep命令 ，搜索。
++ -i	忽略大小写的不同，所以大小写视为相同
++ -r	递归搜索eg：grep -r "main()".
++ -v	反向选择，打印不匹配的行
++ -c	计算找到‘搜寻字符串’（即 pattern）的次数
++ eg：grep "root" /etc/passwd --color=auto(--color=auto为颜色)
+## 文件处理命令
+### sort命令
++ m:若相同则合并文件
++ f:忽略大小写
++ d:按字典序排列，非字典符忽略
++ b:忽略前导空白字符。
++ r:逆序输出结果
+
+### unip命令，删除文件中重复行
++ d/u:只(不)显示重复行
++ c:显示每行出现次数
+
+### wc命令 ，统计。
++ -c	统计字节数
++ -l	统计行数eg：wc -l c.txt
++ -w  统计行数
+  
+### comm [选项] 文件 1 文件 2 ，比较已排序文件。
++ -1不输出文件 1 特有的行
++ -2不输出文件 2 特有的行
++ -3不输出文件 1，2 特有的行
+### diff [option] file1 file2,比较文件无需已排序。
++ -b 忽略空格
++ -r 递归处理，file换位dir
+  
+## 磁盘管理命令
+### 基础知识
++ 所有的硬件设备都映射到一个文件系统，swap分区可提供虚拟内存。
++ 设备类型：
+  - IDE设备：前缀hd,编号为abcd...
+  - SCSI设备，前缀sd,编号为abcd...
++ 硬盘分区：
+  - 最多有4个主分区（以数字编号1234），含拓展分区，拓展分区中可以逻辑分区（编号以5开始）。
+### mount命令，挂载命令。
++ mount -t type device dir
+  - type 为文件系统个格式（ext4、vfat、ntfs）
+  - device 设备名
+  - dir 为挂载点
+### umount命令，卸载命令
++ umount [device/dir]
+### 查看分区信息
++ mount 显示磁盘挂载信息
++ fdisk -l 查看磁盘分区信息
++ df 查看磁盘情况
+### fdisk：进行磁盘手动分区，和格式化
++ fdisk dir//开始分区
+  - m:选择命令。
+  - n:新增分区
+  - d:删除分区
+  - p:显示已有分区信息
+  - q:退出
+  - t:设置分区号
+  - u:改变空间大小显示方式
+  - w:保存
+  - x:进入专家模式
++ mkfs 分区格式化
+  - mkfs -t type device [block_size]
+    * type 格式化后的类型
+    * device 为设备名
+    * [block_size] 设备大小为可选参数
+  - mkswap dir //将dir格式化为swap分区
+
+## rpm命令
++ rpm -q  //查询安装信息
++ rpm -i //安装
+  - 安装可能的问题：重复安装、文件冲突（部分已安装）、依赖关未解决。
++ rpm -e //卸载文件
+
+## yum命令
++  yum install //安装文件
++  yum remove //卸载文件
++  yum list install //列出已安装的文件
++  yum search software //查找软件
+
+## gzip/bzip/zip命令，文件压缩
+
+### gzip
++ gzip 压缩
++ gunzip 解压缩 ，删除原文件
++ zcat 解压缩并输出到stdout，不删除原文件
++ 选项：
+  - -r:递归压缩
+  - -level:设置压缩率
+  - -f:强制压缩
+  - -c：将压缩和解压缩的结果输出到stdout
+  - -n：保留原文件名和时间戳
+  - -N：不保留原文件名和时间戳
+  - -t：测试压缩文件是否损坏
+  - -v：显示执行过程
+  - -V：显示版本信息
+  - -q：不显示警告信息
+  - -a：使用ASCLL编码
+  - -S：更改压缩后文件后缀
+
+### bzip
++ bzip2 压缩
++ bunzip2 解压缩 ，删除原文件
++ bzcat 解压缩并输出到stdin，不删除原文件
++ bz2recover 修复并解压缩
++ 选项：
+  - -d：解压缩
+  - -level:设置压缩率
+  - -z/f:强制压缩
+  - -c：将压缩和解压缩的结果输出到stdout
+  - -k：保留原始文件
+  - -t：测试压缩文件是否损坏
+  - -L：显示版本和授权信息
+  - -V：显示版本信息
+  - -s：减少内存的使用
+
+### zip命令
++ zip:压缩
++ unzip:解压缩
+## tar命令，文件打包
++ 选项
+  - cvf:创建新备份、显示执行过程、指定需要的原文件
+  - z:压缩算法选择gzip
+  - j:压缩算法选择bzip
+  - C：指定压缩后保存的位置
+  - x:解压缩
+  - t:列出文件内容。
++ 其他：
+  - tar -tf etc.tar | more //查看压缩包的内容
+
+
+# 开启虚拟机网络
++ 登录root用户
++ ifconfig -a 查看使用的网卡，一般为ens33
++ ifup ens33 激活链接，一般默认为DHCP模式
++ 打开虚拟网络编辑器，新建VMnet8设置为nat模式设置子网IP。
++ 启动并设Windows下的虚拟网卡VMnet8设置为自动获取IP，也可固定IP、掩码、网关DNS。
+
+## 其他
++ tar -xzvf  压缩包的路径  -C 目标路径
++ Linux中的补全建： Tab
++ tree**列出一个文件夹下的所有子文件夹和文件（以树形结构来进行列出）
++  输入su然后输入root密码可切换到root用户。
++ 关机命令：
+  - 重启命令：reboot, init 6, systemctl reboot
+  - 关机命令：poweroff, init 6, systemctl poweroff
++ 注销用户命令：logout，退出控制台命令：exit
++ Showdown命令：（-t在改变runlevel之前告诉init多久后关机 -r重启 -k发送警告给登录者 -h关机后关电 -f重启时忽略fsck -F重启时强迫fsck -time设定关机前的时间）showdown -h 20:54
++ Haltreboot命令（就是调用showdown -h）：
+-n防止sync系统的调用 -w写wtmp记录 -d不写wtmp记录 -f不调用showdown而关机 -I关机前断网 -p默认选项
++ init命令
+  七个级别，init 0关机 init 6 重启
+
+
 
 ***
