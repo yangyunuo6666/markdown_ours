@@ -1,0 +1,55 @@
+{
+    "job": {
+        "content": [
+            {
+                "reader": {
+                    "name": "mysqlreader",
+                    "parameter": {
+                        "column": [
+                            "id",
+                            "name"
+                        ],
+                        "connection": [
+                            {
+                                "jdbcUrl": [
+                                    "jdbc:mysql://hadoop102:3306/datax"
+                                ],
+                                "table": [
+                                    "student"
+                                ]
+                            }
+                        ],
+                        "username": "root",
+                        "password": "root"
+                    }
+                },
+                "writer": {
+                    "name": "hdfswriter",
+                    "parameter": {
+                        "column": [
+                            {
+                                "name": "id",
+                                "type": "int"
+                            },
+                            {
+                                "name": "name",
+                                "type": "string"
+                            }
+                        ],
+                        "defaultFS": "hdfs://hadoop102:9000",
+                        "fieldDelimiter": "\t",
+                        "fileName": "student.txt",
+                        "fileType": "text",
+                        "path": "/",
+                        "writeMode": "append"
+                    }
+                }
+            }
+        ],
+        "setting": {
+            "speed": {
+                "channel": 1
+            }
+        }
+    }
+}    
