@@ -8,6 +8,7 @@
 - 优点：静态语言 编译器一次性生成目标代码，优化更充分程序运行速度更快
 脚本语言 执行程序时需要源代码，维护更灵活，源代码在维护灵活、跨多个操作系统平台。
 * [网站1](http://www.runoob.com/python3/python3-tutorial.html)
+- 永久配置第三方网址：pip config set global.inndex-url 网址//https://pypi.tuna.tsinghua.edu.cn/simple
 ## Python库
 ### turtle库（海龟绘图）
  1.  turtle.setup(长，宽，位置X，位置Y)//其中（x,y）为相对左上角坐标，为可选参数。
@@ -40,11 +41,12 @@
  + random模块的随机选择函数：choice随机选择容器中的一个元素，sample随机选择容器中的n个元素。
 #### 推导式
 + 列表推导式：list2=[x**2 for x in range(1,10)]
++ list2=[x**2 for x in range(1,10) if x%2==0]//列表推导式可加条件
 + 也可用于字典推导式：dict2={x:x**2 for x in range(1,10)}
 ### 易错
   - 字典的修改：~~dict[name]="ksdlf"~~,应为dict["name"]=ksdlf.
 ###  查看已安装依赖包,安装所有的依赖包 ：
-  ```
+  ```python
     pip list 或pip freeze
     pip freeze   > requirements.txt//输出所有的依赖项
               >重定向  输入到依赖文件requirements.txt
@@ -52,7 +54,7 @@
   ```  
 ## **异常处理与assert断言，异常具有传递性**
 + try...except...结构(**意义在于不让异常中断代码执行**)
-  ```
+  ```python
    try：
     x = int(x)#需要执行的代码
   except Exception1: #也可用(EX1,EX2)一次多个类型异常
@@ -63,7 +65,7 @@
     print{'error'}#出错后执行的代码 
   ```
 ###  **try...except...else...结构**
-```
+```python
    try：
     x = int(x)#需要执行的代码
   except Exception1:
@@ -72,7 +74,7 @@
     print{'planB')
 ```
 1. **try...except...finally...结构**
-  ```
+  ```python
    try：
     x = int(x)#需要执行的代码
   except Exception1:
@@ -85,7 +87,7 @@
    assert a != 0,
    return a / b 
 + with XXX as：当下面语句执行完毕后，自动关闭XXX。
-```
+```python
 with open('a.txt','w') as file:
     file.write('hello world')
 ```
@@ -138,7 +140,7 @@ chr 通过 序号 找到对应的 字符
 ### **自定义模块**
    + 每个Python文件都可作为一个模块，但是命名需要符合命名规则。**当导入多个模块的同名函数的时后一个会覆盖前一个**
    + **_ _ mian _ _ == '_ _ main _ _'**直接输入main按Tab即可补全。
-    ```
+    ```python
     if __main__ == '__main__':
     //当直接右键运行时__maim__变量初始化为‘__mian__’条件成立，通过模块导入时条件不成立
       f(x,b)
@@ -179,14 +181,14 @@ chr 通过 序号 找到对应的 字符
   + 定义：同样的行为不同的对象得到不同的结果。
   + 子类复写了父类方法，传入父类方法执行的子类的方法。
   + 抽象类（接口）实现：父类定义了有哪些方法，具体方法子类实现。(父类确定标准(顶层设计)，子类具体实现标准)。
-```
+```python
     def f(x):
       pass //父类方法中用来占位的语句 
 ```
 ###  **特殊方法**  
   +   __ init __（）方法
       类实例化时会init方法会自动执行内部的代码，将传入的数据给init函数使用。
-        ```
+        ```python
         class student:
           name = None   
           age = None
@@ -196,12 +198,12 @@ chr 通过 序号 找到对应的 字符
         ```
   + __ str__()方法
     转化为字符串，直接输出会有多余的地址。
-      ```
+      ```python
       def __str__(self):
         return {self.name}
       ```
   + __ it__()方法，大小比较
-    ```
+    ```python
     def __it__(self,other):
       return self.age < other.age
     ```
@@ -216,7 +218,7 @@ chr 通过 序号 找到对应的 字符
 ###  **成员方法：**
    #### 实例方法：
     实例可以用方法，可以通过实例进行调用。它第一个参数必为self，传递变量时无需传递，可以self.x访问类变量。
-     ```
+     ```python
      class student:
       name = None
       def say_hi(self):
@@ -229,7 +231,7 @@ chr 通过 序号 找到对应的 字符
    + dir（）函数可获得一个对象的所有属性和方法。
 ### 装饰器(紧跟在函数或方法定义之前)
   +  @classmethod 装饰器：
-```
+```python
 class MyClass:
     @classmethod
     def class_method(cls, arg1, arg2, ...):
@@ -239,7 +241,7 @@ cls 是类方法的第一个参数，用于引用类本身。
 类方法可以被类直接调用，而不需要创建实例。
 ```
   + @staticmethod 装饰器：
-```
+```python
 class MyClass:
     @staticmethod
     def static_method(arg1, arg2, ...):
@@ -250,7 +252,7 @@ class MyClass:
 ```
 
   + @abstractmethod 装饰器：
-```
+```python
 from abc import ABC, abstractmethod
 
 class MyAbstractClass(ABC):
@@ -262,7 +264,7 @@ class MyAbstractClass(ABC):
 抽象类必须继承自 ABC（Abstract Base Class）类。
 ```
  + @property 装饰器：
-```
+```python
 class MyClass:
     def __init__(self, value):
         self._value = value
@@ -328,28 +330,29 @@ print(“文本内容：”,f1.read())#读取文件
 f1.close()#关闭文件
 ###	输出(格式化输出符号与C相同)
 +	Print（）函数作为Python 最常用的输出语句，可以输出字符串、数值和变量等。
-print（“中国医科大学计算机教研室”)   print（）函数默认换行的，若要连续输出则可在print（）函数中加入“end="”语句。代码如下：
-print（"中国医科大学"，end=")
-print（“计算机教研室”）输出为：中国医科大学计算机教研室
-print("a + b 输出结果："，a + b)#连接字符串
-print("a*2 输出结果：”, a*2)#重复输出两次字符串
-print("圆周率为：%.0f" % pi)格式化输出
-print('圆周率为：%.2f' % pi) 格式化输出
+  print（“中国医科大学计算机教研室”)   print（）函数默认换行的，若要连续输出则可在print（）函数中加入“end="”语句。代码如下：
+  print（"中国医科大学"，end=")
+  print（“计算机教研室”）输出为：中国医科大学计算机教研室
+  print("a + b 输出结果："，a + b)#连接字符串
+  print("a*2 输出结果：”, a*2)#重复输出两次字符串
+  print("圆周率为：%.0f" % pi)格式化输出
+  print('圆周率为：%.2f' % pi) 格式化输出
 + print有一个默认参数end="\n",可替换为无即可不换行输出，可选参数set='\t'可指定分隔符。
 + print("element的值是{element[0]}")
 
 ## Python数据类型
 1.	Python的变量不需要声明，但是使用前必须赋值，赋值后变量才会被创建，根据值得到相应的类型（浮点数只有float没有double，数字还有complex复数类型，**Python的变量可以重新赋不同类型值**
 ## Python的容器
-###	字符串(不可修改的数据容器) 
+###	String(不可修改的数据容器) 
 + 可以使用单引号或双引号创建字符串，str[1]表示第二个字符。**(不可修改：不可追加，移除，修改元素)**
++ print(f"Hello, {name}")//f-string格式化字符串，它允许在字符串中嵌入表达式，并使用大括号{}来表示嵌入的表达式。
 + 编码方式： 
   * UTF-8 全球编码，1字节表示英文，3字节表示中文。
   * GB2312 中国制定的编码方式，1字节表示英文，2字节表示中文。
   * GBK 对GB2312进行了扩充。
   * CP936 微软在GBK基础上进行了再开发。
   
-+ Python 也可以在方括号中使用范围来获取字符串的中间“一段”（称为子串），其基本语法格式为string[start:end:step]，string字符串名，后依次为开始字符（省略默认为首字符），结束字符（省略默认为尾字符），步长（间隔步长截取字符，负数为反方向截取，省略默认为1，最后一个：可省略）eg：print（a[1:2:1]）
++ Python 也可以在方括号中使用范围来获取字符串的中间“一段”（称为子串），其基本语法格式为string\[start: end:step]，string字符串名，后依次为开始字符（省略默认为首字符），结束字符（省略默认为尾字符），步长（间隔步长截取字符，负数为反方向截取，省略默认为1，最后一个：可省略）eg：print（a[1:2:1]）
 + 方法
   - find（str,beg=,end=）找到返回位置，否则返回-1
   - join（list1）连接可迭代对象为字符串（str1的第一个字符与str2的第二个字符交替连接），并返回已连接的字符串。
@@ -484,7 +487,7 @@ Except<异常名>
 + 当调用next方法时，遇到yield就是暂停运行，并且返回yield后面的值，next的参数为生成器。
 当再次调用next时，会从刚才暂停的地方继续运行，直到运行下一个yield
 + __ iter__()方法返回迭代器自身，__ next__()方法返回序列中的下一个值。
-```
+```python
 def __iter__(self):
   return self//返回迭代器本身
 ```

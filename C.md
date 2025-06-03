@@ -21,6 +21,7 @@
 + 函数的实参可以是常量变量表达式，但是要有确定的值传递给形参。
 + 数组要开大一点防止数组越界，特别是字符数组要避免缓冲区溢出（即用scanf %s读入数据太多了，将多余的数据写到了不该写的地方,然后就会错的莫名其妙的，输出正确的一直WAWAWA）
 + 函数有部分数据可以进去，部分数据调试时卡在那里下不去，可能是自定义的函数出错遇到那个数据时导致循环变成死循环。
++ 段错误：内存访问越界，递归过深可导致。
 + 函数exit（）；退出程序。
 + 在使用malloc函数要保证安全，
 p=(line*)malloc(sizeof(line));
@@ -50,7 +51,7 @@ Const与#define：const定义的是常变量具有变量的性质（有类型，
  
 
 + Switch—case语句（循环控制与goto）
-```
+```c
 switch(type)
   {
    case 1（常量int/char）:
@@ -100,7 +101,7 @@ Bool 要用#include <stdbool.h>的头文件，之后可使用bool和true代替1,
 +	指针
 +	自定义
 +	用const修饰的变量“不可”修改，const离谁近谁被固定。
-```
+```c
 const int a = 5;	//a = 6;				// error: assignment of read-only variable ‘a’
 	int *p;
 	p = (int *)&a;			// 这里报警可以通过强制类型转换来消除
@@ -113,7 +114,7 @@ const int a = 5;	//a = 6;				// error: assignment of read-only variable ‘a’
  
 ## Struct与Union结构体变量
 +	定义：struct 名字	
-```
+```c
 struct student
 { int number;
   char name[20];
@@ -128,7 +129,7 @@ printf("%s\n",a);//指针字符串输出，对应的是字符型指针名。
 +	结构体变量可以向普通变量一样使用，但要加上一个结构体变量名前缀,但是只能对最底层的结构体变量做（即结构体嵌套要用.到最底层才能进行运算）。Eg：student1.number=2+3;
 +	同类的结构体变量可以相互赋值，可以对结构体变量取地址。对指向结构体变量的指针解指针后原来指针指向东西。（printf("%d",（*p）.number);）
 +	结构体数组在最后定义变量时改为数组即可。
-+	为了直观和方便（*p）.number可用p->number;代替，数组a[i](*p)故结构体数组只可以用a[i].date
++	为了直观和方便（*p）.number可用p->number;代替，数组a[i](*p)故结构体数组只可以用a[i].date
 若P指向一个结构体变量下面三种表达等价：
  -	stu.成员名（如stu.number）
  - 	(*p).成员名（如(*p).number）
@@ -139,7 +140,7 @@ printf("%s\n",a);//指针字符串输出，对应的是字符型指针名。
  -	用结构体变量作为实参，属于值传递。函数调用时要占用内存空间和时间开销大，一般不用。
  -	用指针做实参。
 +	Union:用同一段内存保存不同类型的变量，但是只能保存一个值，占的内存为最大的变量的大小。
-```	
+```c	
 union date
 {
 	int a;
@@ -147,7 +148,7 @@ union date
 };
 ```	
 + 在stuct中嵌套union，可以一个union保存两个不同类型的变量。输入时a.b.c
-```	
+```c	
 typedef struct{
 	union{
 		char a;
@@ -161,7 +162,7 @@ main()
 }	
 ```	
 +	定义一个结构体变量时可以将类型定义为 Elemtype 后要使用时用typedef重定义即可得到合适的类型。
-```	
+```c	
 typedef struct{
 	ElemType date[]; 
 }stack;
@@ -193,7 +194,7 @@ enum 枚举类型名字（名字0,  ，名字n};
 		 struct student *p;//定义了指向struct student结构体变量的指针
 }；只是定义了一个struct student型的变量，未实际分配空间，只有定义了变量才实际分配空间。
 5.	使用typedef可对结构体变量重命名，便于书写。 
-```	
+```c	
 typedef struct LinkNode 
 {
 													int data;
@@ -202,7 +203,7 @@ typedef struct LinkNode
 ```	
 后续可以用Node代替struct LinkNode
 +	静态链表：
-```	
+```c	
 struct LinkNode 
 {
 	int data;
@@ -226,7 +227,7 @@ void test()
 }
 ```	
 + 动态列表 
-```	
+```c	
 #include <stdio.h>
 	
 main()
@@ -292,7 +293,7 @@ struct Student *creat()
 # Scanf与printf
 + scanf输入正确会返回输入的数的个数，利用这一点可以做很多事情。
  -
- ```	
+ ```c	
   while (scanf("%lf%d", &x, &exp) == 2)//获取两个值成功
     {
        xpow = power(x,exp);   //处理两个值
@@ -362,7 +363,7 @@ eg：sizeof（double）；可计算占内存大小（单位是字节，一字节
 + 条件运算符：count=(count<20)?count-10:count+10; 即if（count<20）则count-10反之count+10；  
 + 优先级：（运算符是动作，算子是参与运算的东西）
 优先级	运算符	综合性
-```	
+```c	
 1	（）	从左到右
 2	！+ - ++ --	从左到右(单目的+-)
 3	*\%	从左到右
@@ -384,7 +385,7 @@ Total *= sumtotal=total*sum
  
 # 函数
 + **函数const char \*为参数可接受char\*为实参的调用**。
-```	
+```c	
 #include <stdio.h>
 void sum(int begin,int end)   （void为返回类型sum为函数名后（int，int）为参数表用，
 {											分开两个参数，在函数定义（）后不能加； }
@@ -406,7 +407,7 @@ main()
  ```	
 + 函数调用：函数名(参数)；注：即使没有参数也需要（）如果有参数要有一定的顺序。
 + Return可返回值。也可出现多个return但为单一出口只用一个。
-```	
+```c	
 #include <stdio.h>
 
 int max(int a,int b)
@@ -425,7 +426,7 @@ main ()
 + 为避免冗杂通常先声明，后定义。
 \#include <stdio.h>
 int max(int a,int b);声明函数头加；变成函数原型，原型中可无ab但要有类型。
-```	
+```c	
 main ()
 {
 	int x; 
@@ -475,7 +476,7 @@ int max(int a,int b)
 + 计存器变量：register int s；（寄存器读写很快，优秀的编译器会自动将用的多的变量放到寄存器中）。
 +  全局变量：
  - 函数体外定义在要用时声明。（extern）
-```	
+```c	
 main() {
 	int a=1,b=4,c=3;
 	extern int A,B,C;（声明，将全局变量的作用域拓展到从此开始）
@@ -485,7 +486,7 @@ main() {
 int A,B,C;(定义三个全局变量)
 ```	
  - 一个C程序可以由多个源程序文件组成的，在一个文件中可以用另一个文件中定义的全局变量，可以用extern来拓展到另一个文件中。
-```	
+```c	
 extern A;//将其他文件中定义的全局变量A作用域拓展到本文件中。
 int sum(int a,int b)
 {
@@ -552,7 +553,7 @@ Pow(double x,double y)；求x的y次方的值。
 Eg：int sea（int key,int a[ ],int length）
 不能再用sizeof来计算数组元素个数，因为传入是函数的数组的地址。  
 + 二维数组：int a[3][5];
-```
+```c
 遍历初始化数组for (i=0;i<3;i++){
 			 for(j=0;j<5;j++){
 			 a[i][j]=i*j;
@@ -571,7 +572,7 @@ Eg：int sea（int key,int a[ ],int length）
 *(a+2)==a[2]表示了相同的值。
  - p++表示让指针指向下一个元素，在数组中p+1是P的下一个元素的地址。
 int sump(int * start, int * end)其中while循环可压缩成一句total += *start++;(结合9.1)
-```
+```c
 {
     int total = 0;
     
@@ -624,7 +625,7 @@ a="I love China";// 将字符串中的第一个元素的地址赋给a
 # 指针
 + 运算符& : 获取变量地址。分配地址时是自上而下的，先定义的反而地址较高。
 + 指针就是保存地址的变量。Eg：int *p; 或int* p；, 打印时用的是%p。
-```
+```c
 Void f(int *p);
 {
 *p = 34;
@@ -634,7 +635,7 @@ Void f(int *p);
 +  
   - 指针应用1：函数返回多个值，某些值就只能通过指针返回，传人的参数实际上是需要保存带回的结果的变量。
 
-```
+```c
 void swap(int *pa,int *pb)
 {
 	int t=*pa;
@@ -648,7 +649,7 @@ void swap(int *pa,int *pb)
  - 指针应用3：函数返回运算的状态，指针返回值，动态内存分配。
 + 数组变量是特殊的指针
   
-```
+```c
 数组变量本身表达地址，所以int a[10]； int*p=a， / /无需用&取地址。
 但是数组的单元表达的是变量，需要用&取地址
 a== &a[0]
@@ -699,7 +700,7 @@ NULL是一个预定定义的符号，表示0地址有的编译器不愿意你用
  
 # Malloc动态内存分配
 + Malloc函数（头文件为#include <malloc.h>和 <stdlib.h>）
-```
+```c
 int *a = (int*)malloc(n*sizeof(int));
 #include <stdio.h>
 #include <stdlib.h>
@@ -879,7 +880,7 @@ Argv[0]是命令本身，当使用Unix的符号链接时反应符号链接的名
  
 
 # 自定义头文件：
-```
+```c
 #ifndef _MYHEAD_H（自定义头文件_是占位符，格式需要）
 #define _MYHEAD_H
  
@@ -898,7 +899,7 @@ main()
  }
 ```
 + #include <stdio.h>实现功能的自定义函数，要包含实现功能所需的头文件。
-```
+```c
  int max(int a,int b)
 {
 	if(a<b){
