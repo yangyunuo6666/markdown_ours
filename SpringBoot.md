@@ -202,6 +202,10 @@
 
 ## 注解驱动
 + SpringBoot摒弃XML配置方式，改为全注解驱动
++ 复合注解可能带来冗余功能，造成性能负担，当仅需要一个功能时，使用颗粒度更小的注解。
+
+
+
 
 ### 组件注册：
   - @Configuration：标记配置类
@@ -225,7 +229,7 @@
   - @ConditionalOnMissingClass (org.springframework.boot.autoconfigure.condition)：若不存在类，则带有这个注解的配置类或 Bean 就会被加载
   - @ConditionalOnBean (org.springframework.boot.autoconfigure.condition)：若存在这个 Bean，则带有这个注解的配置类或 Bean 就会被加载
   - @ConditionalOnMissingBean (org.springframework.boot.autoconfigure.：condition)：若不存在这个 Bean，则带有这个注解的配置类或 Bean 就会被加载
-  - ---------------------------------------------------------------------
+  
   - @ConditionalOnRepositoryType (org.springframework.boot.autoconfigure.data)
   - @ConditionalOnDefaultWebSecurity (org.springframework.boot.autoconfigure.security)
   - @ConditionalOnSingleCandidate (org.springframework.boot.autoconfigure.condition)
@@ -244,12 +248,23 @@
   - @ConditionalOnGraphQlSchema (org.springframework.boot.autoconfigure.graphql)
   - @ConditionalOnJava (org.springframework.boot.autoconfigure.condition)
 
+### 常用注解
++ @Data：是 @Getter、@Setter、@ToString、@EqualsAndHashCode 和 @RequiredArgsConstructor的复合注解，自动生成get、set、toString、equals、hashCode、constructor方法
+  - 它是通过在编译时修改AST，来实现的。
+  - 注意但有时它生成的方法（特别是 equals, hashCode, toString 包含所有字段）可能不符合你的具体业务需求，需要谨慎使用或使用更细粒度的 Lombok 注解替代。
 ### 属性绑定
 + @ConfigurationProperties： 声明组件的属性和配置文件哪些前缀开始项进⾏绑定
 + @EnableConfigurationProperties：快速注册注解：
   - 场景：SpringBoot默认只扫描自己主程序所在的包。如果导入第三方包，即使组件上标注了@Component、@ConfigurationProperties 注解，也没用。因为组件都扫描不进来，此时使用这个注解就可以快速进⾏属性绑定并把组件注册进容器  将容器中任意组件（Bean）的属性值和配置文件的配置项的值进⾏绑定
     - 给容器中注册组件（@Component、@Bean）
     - 使用@ConfigurationProperties 声明组件和配置文件的哪些配置项进⾏绑定
+
+## 事件驱动：
++ 发布者-->发布事件-->多个监听者监听事件（监听者仅处理自己感兴趣的事件）-> 处理事件
++ 事件生命周期监听器：springAplicationRunlistener：在应用启动前后做什么。
+  - ApplicationXXXlistener：回调监听器：监听一个生命周期的某个阶段，除了Applistener全阶段（基于事件）、SpringAppRunlister全阶段（基于回调）。
+
+
 
 ## 日志
 + springboot中：导入任何第三方框架，先排除它的日志包，因为Boot底层控制好了日志
@@ -569,6 +584,15 @@ public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfigurat
   - EnableWebMvcConfiguration 继承与 DelegatingWebMvcConfiguration ，这两个都生效
   - DelegatingWebMvcConfiguration 利用 DI 把容器中 所有 WebMvcConfigurer 注入进来
   - 别⼈调用 DelegatingWebMvcConfiguration的方法配置底层规则，⽽它调用所有 WebMvcConfigurer 的配置底层方法。
+
+### web安全
++ 1. 认证
+  - ApplicationConfigureradpter
+  - samlesecurAppliction
++ 2. 授权
+  - 指定什么请求需要什么权限
++ 3. 攻击防护
+  - 
 
 ### 内容协商（多端内容适配）
 + 根据需求将数据转换为不同格式，如json、xml、html等，后返回。（浏览器常用xml、手机常用json）

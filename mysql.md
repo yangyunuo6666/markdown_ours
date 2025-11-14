@@ -3,6 +3,7 @@
 
 # 易错集合与技巧
 + 检查非空：IS NOT NULL,检查不在此范围：NOT IN(BEGIN,END) 或 not between 10 and 18
++  **SQL实际执行顺序： FROM(包括JOIN) -> where -> group by -> having -> select ->   distinct -> order by ->  limit、offset**
 + 使用set a=a+1 where a>5**通常需要考虑是否需要后接一个where子句**
 + 单词拼写：delete、update、rollback、insert、cursor游标、fetch遍历、auto_increment、declare、restrict限制、cascade、procedure，**可以使用拼音输入让输入法给你纠错。**
 + 事务中错误、不一致问题：都回答属于脏读、脏写、不可重复读、幻读。
@@ -869,33 +870,45 @@
     FROM table_name
     WHERE read_id < 4; //插入查询结果。
 + REPLACE类似INSERT，若插入数据与已有数据重复，则删除已有数据。
-+ **插入子查询结果时：**无需values关键字。
++ **插入子查询**结果时：**无需values关键字。
 ###### 数据更新：UPDATE
 + UPDATE table_name
   SET col_name1=value1,col_name2=col_name2+10,...
   WHERE 条件
-+ **嵌套子查询时：** 被更新的表不能出现在SET和where语句的字查询中。
++ 嵌套子查询时： 被更新的表不能出现在SET和where语句的字查询中。
 ###### 数据删除：DELETE、TRUNCATE
 + DELETE FROM table_name WHERE 条件 //删除满足条件的数据行
 + TRUNCATE TABLE table_name //删除表中所有数据，保留表结构，**先删除表再创建表，操作无法回滚，会有隐式提交即表已经删除但为创建**
 ###### 数据查询：SELECT
++ **易错点**
+  - 使用保留字作为列名时需要用反引号括起来，字符串、日期直接写需要用单引号括起来。
+    - 保留字（可用show warnings;查看）： grant、revoke、char、text、date、time、
+  - 删除和查询同时进行（可将查询后的表，外面再嵌套一层select即可解决）
+  - not in 不可用于含null值的集合，因为null值与任何值比较结果都是null。
+  - select id,"aaa" zm from tab1;//查询所有id，将"aaa"赋值给zm列，常与union联合用于行转列
+  - 复合条件：(A=1 and str = 'true') or (A=2 and str = 'false')
+  - 匹配多个值：in (1,2,3) ，模糊查询 like '%1%' 
+  - join条件：= 、> 、datediff() >10
+  - **有聚合函数必须有group**
 + 格式：
   - **SELECT**  列名1,列名2,… **FROM** 表名 WHERE 条件
   - **SELECT** * **FROM**表名
   - 可选参数
     - distinct(去重查询，可选，为与SELECT之后，查询字段之前。 )
-    - limit 2，3 //限制查询结果数量，从第2行（有第0行）开始，查询3行，仅写3为查询3行，**放于末尾**
+    - limit 2，3 //限制查询结果数量，从第2行（有第0行）开始，查询3行，仅写3为查询3行，**放于末尾，可配合offset N设置跳过的行数**
     - order by col_name1,col_name2 //排序，默认升序ASC，可与末尾加desc降序。
     - order by rand() //随机排序。
     - group by
       - 末尾，可加with rollup，表示分组后求和
       - HAVING 条件 //分组后对行进行筛选，group by在where之后在order by之前。
       - 聚和函数（**与group by连用或在select中单独使用**）：SUM(col_ID)//计算ID之和 AVG(*)所有的平均值 MAX(emul) MIN(emul) COUNT(emul)，**聚合函数可以用于统计，也可用于边统计边判断，想要在where中查询含最大值的行，需要先用select语句查询最大值。eg:  having count(\*) > 5** ，但是不能用于where子句因为where用于过滤列是在确定列，而聚和函数是统计列where在前。
-      - **count(*)统计非空行数，count(1)统计行数含非空行。**
+      - count(*)统计非空行数，count(1)统计行数含非空行，count(distinct col_name)统计非空列名不同的行数。
       - 当group by有多个列名时会依次根据列名分组再组内分组，前面若有count（*）则只会聚合最小的分组。
     - select workaddres, conut(*) from emp where age < 45 group by workaddres having count(*) > 3;//查询年龄小于45的员工，根据工作地点分组，获取人数大于3的结果。
     - **范围查询**：where num **between** 10 **and** 20 //查询num在10到20之间的数。 
-    
+
++ **SQL实际执行顺序： FROM(包括JOIN) -> where -> group by -> having -> select ->   distinct -> order by ->  limit、offset**
+
 + 基本查询：(执行顺序：from->where->select)
 
 |ID|关键词|实例|
@@ -906,16 +919,18 @@
 + WHERE子句运算符：
   - 比较运算符：=、>、<、>=、<=、<>(不等于)、!=、(可a=3 and b=2 <=> (a,b)=(3,2) )
   - 逻辑运算符：AND、OR、NOT、XOR(仅满足一个条件)
-  - 集合运算符：IN、NOT IN
+  - 集合运算符：IN、NOT IN（**本质是=、！=运算，在SQL中任何值与null的not in 运算结果都是空值，故使用not in需要保证集合中没有空值**）
   - 字符串匹配：LIKE、NOT LIKE
   - 其他运算符：等价：>=and=<
   - bewteen 100 and 200 //查询100到200之间的数据
   - publisher (not)in ('A','B') //查询出版社(不)为A或B的数据
   - 空值判断：IS NULL、IS NOT NULL
-  - order by 列名1,列名2,… //排序，**默认升序，但是加上ASC可加快查询速度**，可指定多个列名，**若为降序则加DESC**
-  - 正则表达式：
-    - [abc]:匹配abc字符子集，[^abc]:匹配除abc字符子集以外的字符，[a-z]:匹配a到z的字符子集，[0-9]:匹配0到9的字符子集
+  - order by 列名1,列名2,… //排序，默认升序，但是末尾加上ASC可加快查询速度 ，可指定多个列名，**若为降序则末尾加DESC**
+  - **正则表达式：where regexp_like(mail, 're', 'c')**：
+    - \[abc]:匹配abc字符子集，[^abc]:匹配除abc字符子集以外的字符，[a-z]:匹配a到z的字符子集，[0-9]:匹配0到9的字符子集
+    - \[a-zA-Z0-9]:匹配a到z、A到Z、0到9的字符子集
     - .{m,n}:点代表任意字符可替换，匹配任意字符m到n次。
+    - $：匹配字符串结尾，^：匹配字符串开头
     - 特殊字符需要转义。
 + 连接（多表）查询（**指定需要的字段而不是\*可加快查询速度**）：
   - 内连接（join）：等值连接(公共属性连接)、不等值连接、自连接(将两个表看为一张表,去除了重复的列)
@@ -946,6 +961,7 @@ WHERE EXISTS (subquery);
 ```
 + EXISTS 子查询若查询到一行结果，则 EXISTS 条件会返回 TRUE并终止子查询；否则，返回 FALSE。
 ###### **窗口函数子查询**
++ 支持组合计算eg：sum() over () - 1、sum() / count()，非聚合函数需要在over () 后计算
 + 不改变返回的行数，但可以通过计算为每一行分配一个值。
 + 基本语法
 ```
@@ -953,17 +969,17 @@ SELECT
     column1,
     column2,
     window_function(column3) OVER (
-        [PARTITION BY partition_expression]
-        [ORDER BY order_expression [ASC | DESC]]
-        [window_frame_clause]
+        [partition by  partition_expression]
+        [order by order_expression [ASC | DESC]]
+        [ROWS between ... and ...]
     ) AS alias
 FROM
     table_name;
 
 ```
   - 当需要重复利用一个窗口函数时可在SQL语句之后定义一个窗口（window w as (parititon by id oreder by sala desc)），在查询中通过 函数类型 over w 字段名 调用。
-  - window_function: 窗口函数的类型，例如 SUM、AVG、ROW_NUMBER、RANK、DENSE_RANK，排名窗口函数不支持分区，**一个查询中可对应多个字段有多个窗口函数。**
-    - row_number:生成序列号。
+  - window_function: 窗口函数的类型，可不用，例如 SUM、AVG、ROW_NUMBER、RANK、DENSE_RANK，排名窗口函数不支持分区，**一个查询中可对应多个字段有多个窗口函数。**
+    - row_number():返回行号，窗口函数支持row_number() - 1
     - rank：无并列排名函数。
     - dense_rank:有并列排名函数。
     - percent_rank:无并列排名函数，返回排名占比。
@@ -971,8 +987,8 @@ FROM
     - ntile:将数据拆分为N等分，返回当前数据在第m等分。
   - over(): 定义窗口函数的使用范围和窗口特性。
   - partition by: 按指定的列或表达式进行分区，窗口函数将在每个分区内计算。如果不使用partition,则整个结果集被视为一个分区。
-  - order by: 指定排序顺序，通常是rank函数。
-  - window_frame_clause: 指定数据聚合范围。常见的窗口类型有 RANGE（以数值为单位如10天） 和 ROWS(以行为单位)，用于指定窗口的行集合。 
+  - order by：指定窗口计算顺序字段，可不写，**但当结果依赖行顺序时必须写，比如排序、最近三天的销售总额**
+  - ROWS: 指定数据聚合范围。常见的窗口类型有 range（以数值为单位如10天） 和 ROWS(以行为单位)，用于指定窗口的行集合。 
     - rows between unbounded preceding and current row: 窗口从第一行开始，到当前行结束。
     - range interval '5' day preceding: 窗口从当前行向前 5 天开始,interval 指定时间间隔。
     - unbounded preceding: 窗口从第一行开始。
@@ -990,69 +1006,125 @@ FROM
 + not in：返回不在集合中的结果。
 + not all：返回小于集合中所有值的结果。
 ###### **常用函数**
-  - 字符串函数
-    - concast(str1,str2),字符串拼接。
-    - lower、upper大小写转换
-    - length(str),长度计算。
-    - trm(str),去除前后空格。
-    - lpad(str,n,pad),左填充至n位。
-    - rpad(str,n,pad),右填充至n位。
-    - substrate(str,start,len),截取指定位置长为len字符串。
-  - 数值函数
-    - round(x,n),保留n位小数，四舍五入。
-    - ceil(x),向上取整。
-    - floor(x),向下取整。
-    - mod(x,y),取x/y的模。
-    - rand(x),0~1随机数。
-  - 日期函数
-    -  curdate(),返回当前日期。
-    -  curtime(),返回当前时间。
-    -  now(),返回当前日期和时间。
-    -  year(date),返回date的年份。
-    -  month(date),返回date的月份。
-    -  day(date),date的天数。
-    -  date_add(date,interval(关键字) expr(大小) type(单位)),返回日期date加上interval expr type后的日期。
-    -  date_sub(date,interval expr type),返回日期date减去interval expr type后的日期。
-    -  datediff(date1,date2),返回日期date1-date2的天数。
-  - 流程控制函数
-    - if(value>1,t,f) //若满足返回T
-    - ifnull(value1,value2) //若value1不为空返回value1
-    - case when [value=1] then [result] ... else  [result2] end 【as 等级(给新列命名)】  //ralue为真返回result否则返回default默认值。
-    - case [expr] when [value] then [result] ... else [default] end //若expr=value返回result否则返回default默认值。
++ 字符串函数
+  - concast(str1,str2),字符串拼接。
+  - group_concat(distinct product order by product separator ',') as new_col,**指定分隔符将str1和str2拼接为一个字符串**。
+    - separator ',' //指定分隔符
+    - 相较于concat可排序、指定分隔符。
+  - substing_index(str,'/',1)，提取以/为分隔符的第一个字符子串，下标从1开始，-1表示从后往前数。
+    - eg：substing_index("http:/url/user_name", '/', -1)结果为user_name。
+    - 或者使用**replace(blog_url,'http:/url/','')、trim('http:/url/' from blog_url)、substr(blog_url,11,length(blog_url)-10)**
+  - lower、upper大小写转换
+  - length(str),长度计算。
+  - replace(str,"aaa","bb"),将str中的aaa替换为bb
+  - trim('aaa' from str),去除前后aaa字符串,trim(str):去除前后空格,trim(leading 'a' from str):去除前a,trim(trailing 'a' from str):去除后a
+  - lpad(str,n,pad),左填充至n位。
+  - rpad(str,n,pad),右填充至n位。
+  - substrate(str,start,len),截取指定位置长为len字符串。
++ **正则表达式：where regexp_like(mail, 're', 'c')，where conditions regexp "^DIAB1|\\sDIAB1"**：
+  - regexp_like函数，匹配参数c区分大小写，i为不区分大小写，m 多行模式，n  - 允许句点(.)匹配换行符
+  - \[abc]:匹配abc字符子集，[^abc]:匹配除abc字符子集以外的字符，[a-z]:匹配a到z的字符子集，[0-9]:匹配0到9的字符子集
+  - \[a-zA-Z0-9]:匹配a到z、A到Z、0到9的字符子集
+  - .{m,n}:点代表任意字符可替换，匹配任意字符m到n次。eg：[1-9]{2,3}//匹配数字是1到9的2/3个s数字
+  - *：匹配前一个字符0次或多次。
+  - |：匹配|左或右的字符。
+  - “abc$”：匹配以abc结尾的字符串，“^abc”：匹配以abc开头的字符串，**匹配有位数要求的，末尾必须加上\$符**
+  - 特殊字符需要转义，反斜杠用于转义句点字符，因为句点字符在正则表达式中具有特殊含义。还要注意，在许多语言中，你需要转义反斜杠本身，因此需要使用两个\来转义
++ 数值函数
+  - round(x,n),保留n位小数，四舍五入。
+  - ceil(x),向上取整。
+  - floor(x),向下取整。
+  - mod(x,y),取x/y的模。
+  - rand(x),0~1随机数。
++ 日期函数**interval**
+  -  curdate(),返回当前日期。
+  -  curtime(),返回当前时间。
+  -  now(),返回当前日期和时间。
+  -  year(date),返回date的年份。
+  -  month(date),返回date的月份。
+  -  day(date),date的天数。
+  -  date_add(date,interval(关键字) expr(大小) type(单位)),返回日期date加上interval expr type后的日期。
+  -  date_sub(date,interval N type),返回日期date减去interval N type后的日期。
+     - type：day、week、month、year、hour、minute、second
+  -  datediff(date1,date2),**返回日期date1-date2的天数**。
+  - date_format(date_column, '%Y-%m') //**格式化日期，也可用来截取日期**
+    - %Y/y：四位数/两位数年份，%M/m/c：英文/数字01/数字1月份，%D/d/e：英文后缀/01/1日，%H/h：24/12/小时，%i：分钟，%s：秒， %W/w/a:英文星期/数字星期/英文缩写星期, %j:一年中的第几天,%p:显示PM/AM，%U/X/u/V/v:一年中的第几周U/X:周日是第一天
++ 流程控制函数
+  - if(value>1,t,f) //若满足返回T
+  - ifnull(value1,value2) //若value1不为空返回value1，使用select ifnull(null,1) as result
+  - case when [value=1] then [result] ... else  [result2] end as 新列名  //ralue为真返回result否则返回default默认值。
+  - case [expr] when [value] then [result] ... else [default] end //若expr=value返回result否则返回default默认值。
+    ```
+    select/where
+        age,
+        case 
+            when age < 18 then '未成年'
+            when age between 18 and 60 then '成年'
+            else '老年'
+        end AS age_group
+    from users;
+    ```
+  - COUNT(CASE WHEN 年龄 = 15 THEN 1 END) AS 15岁人数,**有条件统计**
+  - sum(case then yaer =2022 then 1 else 0 end)
 
-##### SQL查询优化
-+ **总纲：中间结果要小，磁盘调用要少，先筛选再连接**
-+ 选择运算尽可能先做。
-+ 将投影和选择运算合并为一个连接运算。
-+ 把投影同其前后的双目运算结合。
-+ 将选择和在其前的笛卡尔积运算结合为连接运算。
-+ 找出公共子表达式。
-+ 减少多表查询、子查询、物化视图。
-+ where中用IN运算代替OR运算。
-+ 避免使用"%string"的全局扫描，而使用"string%"的字段索引扫描。
-+ 使用UNION ALL 而不是UNION因为后者包含去重操作。
+#### **公共表达式CTE:类似临时表**
++ 公共表达式（CTE）：在查询中定义一个临时表，并在查询中引用它。
++ 用于多个条件查询，便于维护，**as 不可省略**
+```
+with table as
+(
+  select 1
+),table2 as
+(
+  select 2
+)
 
-#### SQL窗口函数(mysql8.x)
-+ SELECT 
-    column1, 
-    column2, 
-   function() OVER (
-    partition by column1 order by column2) 
-    AS new_cname
-  FROM table_name;
-  - partition by：指定分组字段
-  - order by：指定排序字段
+select * from table,table2
+```
+
+#### SQL窗口函数(mysql8.x)：不改变表格但为每一行添加一个值
+```
+SELECT
+    column1,
+    column2,
+    window_function(column3) OVER (
+        [partition BY partition_expression]
+        [ORDER BY order_expression [ASC | DESC]]
+        [ROWS between ... and ...]
+    ) AS alias
+from
+    table_name;
+
+```
++ 同一个窗口多次利用，在from后使用Window as ()定义
+```
+select 
+    department,
+    employee,
+    salary,
+    AVG(salary) OVER w AS avg_salary,
+    SUM(salary) OVER w AS sum_salary,
+    RANK() OVER w AS salary_rank
+from employees
+window w as (PARTITION BY department ORDER BY hire_date);
+```
+
++ partition by：指定分组字段，可不写
++ **order by：指定窗口计算顺序字段，可不写，但当结果依赖行顺序时必须写，比如排序、最近三天的销售总额**
++ rows between ... and current row：指定窗口范围，可不写 
 ##### window_founction
++ 支持组合计算eg：sum() over () - 1、sum() / count()，非聚合函数需要在over () 后计算
 + 序号函数（分组排序，并添加序号）
-  - row_number()、rank()、dense_rank()//row_number()为不重复排名，rank()为有并列排名，dense_rank()为有并列且连续排名
+  - row_number()为不重复排名，rank()为有并列排名，dense_rank()为有并列且连续排名//**排序在over中必须有order by**
+  - row_number():返回行号，窗口函数支持row_number() - 1
 + 聚合函数
   - sum、avg、max、min、count
 + 分布函数
   - cume_dist():返回小于等于当前值的百分比。
   - percent_rank():计算当前行在结果中的百分比排名。
 + 偏移函数
-  - lag(col,n,default):返回当前行往前第n行的值，若没有则返回到default行。
-  - lead(col,n,default):返回当前行往后第n行的值，若没有则返回到default行。
+  - lag(col,n,default):返回当前行往前第n行col列的值，若没有则返回到default行。
+  - lead(col,n,default):返回当前行往后第n行col列的值，若没有则返回到default行。
 + 首尾函数
   - first_value(col):返回当前窗口的第一行值。
   - last_value(col):返回当前窗口的最后一行值。
@@ -1062,7 +1134,46 @@ FROM
 ##### window_over
 + partition by：指定分组字段
 + order by：指定排序字段
++ **ROWS: 指定数据聚合范围**
++ 常见的窗口类型有 range（以数值为单位如10天） 和 ROWS(以行为单位)，用于指定窗口的行集合。 
+  - rows between unbounded preceding and current row: 窗口从第一行开始，到当前行结束。
+  - range interval '5' day preceding: 窗口从当前行向前 5 天开始,interval 指定时间间隔。
+  - unbounded preceding: 窗口从第一行开始。
+  - unbounded following: 窗口到最后一行结束。
+  - not between……and：返回不在此范围的结果。
+  - between ... and ...: 窗口从指定行开始，到指定行结束。
+  - N preceding: 窗口从当前行向前 n 行开始。
+  - current row: 窗口从当前行开始，到当前行结束。
+  - N following: 窗口从当前行向后 n 行开始。 
+  - in：返回在集合中的结果
+  - all：返回大于集合中任意值的结果。
+  - any：返回大于集合中所有值的结果。
+  - not in：返回不在集合中的结果。
+  - not all：返回小于集合中所有值的结果。
+##### **SQL查询优化**
++ SQL优化步骤：**根据日志找到慢sql，sql前加上explain查看执行计划**
+  - 如果type是ALL：考虑增加索引。 
+  - 如果Extra有Using filesort或Using temporary：优化GROUP BY/ORDER BY，或为排序字段加索引。
+  - 如果rows很大：优化WHERE条件，增加更有效的索引。
+  - 检查SQL写法，消除SELECT *、不必要的子查询等。 
 
++ SQL查询优化
+  - 避免使用select *，全局扫描太耗费时间，选择运算尽可能先做。
+  - 小表驱动大表：left join时小表(数据少、索引完全)在前，大表在后，前为驱动表
+  - 用连接查询代替子查询(部分表适用)：多一个子查询多一次连接数据库查询，且子查询需要临时表效率低。
+  - **索引调优**：
+    - 优化where：避免在where上使用函数或计算(=、<>)，这会导致索引失效，可用>25 AND <= 25代替
+    - group by 字段(索引字段)，查询过慢可尝试为该字段加索引,同理保证where条件、join条件、order by字段有索引可用。
+    - 使用后导模糊查询：LIKE '%abc' 无法使用索引，但 LIKE 'abc%' 可以。
+  - 批量操作：数据连接消耗资源，考虑内存下一次插入500条数据
+    - 批量插入，insert into orders values(1,2,3),(4,5,6)
+  - 使用limit，减少数据量。（但limit 10000,10不可取,它会拿到10000条数据在返回最后10条数据，用where id代替），**使用limit 6,18446744073709551615可跳过前6行取数据**
+  - 使用exists代替in，in会全表扫描，exists只扫描外表。
+  - 确定结果无重复或重复无影响，用union all 代替 union
+  - 减少多表查询、子查询(找出公共子查询用CET)、物化视图。
+    - 选择和连接合并，先连接后过滤
+    - 减少全连接操作，连接条件可以是 a.date - b.date = interval 1 day
+  - join的表不宜过多，因为join需要消耗CPU资源。
 #### SQL编程
 ##### 基础知识
 + 注释：#放在行末、-- 在行末，--要加一个空格

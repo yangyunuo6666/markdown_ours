@@ -84,6 +84,7 @@
 |末线模式	|在命令模式下打一个:|
 |	:wq |保存退出|
 |	:q! |强制退出|
+|/a['ip+回车|**搜索a[ip**|
 
 1. 在 vim 中
 **: 执行vim本身的命令
@@ -120,7 +121,16 @@
   - 备份:sudo cp -r /etc/yum.repos.d /etc/yum.repos.d.backup
   - 清除配置:sudo rm -f /etc/yum.repos.d/*.repo
   - 下载配置:sudo curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
-  - 刷新:sudo yum clean all sudo yum makecache
+  - 刷新:
+    - sudo yum clean all
+    - sudo yum makecache
+  - 清华源：
+
+sudo rm -f /etc/yum.repos.d/*.repo
+sudo curl -o /etc/yum.repos.d/CentOS-Base.repo https://mirrors.aliyun.com/repo/Centos-7.repo
+sudo yum clean all
+sudo yum makecache
+
 
 ## apt-get命令（Ubuntu）
 +  apt-get install //安装文件
@@ -422,6 +432,8 @@ group_name:group_password:group_id:group_members
 + less(**部分加载适合大文件的查看**):Page Up 上翻页 Page Down下翻页,q:退出
 + head：显示文件头（前）10行，head -n 5 filename显示前5行
 + tail:显示文件尾（后）10行，tail -n 5 filename显示后5行
+  - n:显示前n行
+  - f：实时查看
 ## 文件内容查询grep "str"  filename
 + i(比较时不区分大小写) c(只显示匹配行数) v(反向匹配) x(完全匹配) n(输出前加上行号)
 ## **文件查询(find、whereis、locate)**

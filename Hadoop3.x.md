@@ -83,18 +83,18 @@
   - ssh-keygen -t rsa //三次回车，依次生成公钥、私钥、公私钥
   - ssh-copy-id hadoop103 //分发公钥给hadoop103，实现对hadoop103的免密登录
 + 编写分发脚本xsync.sh，分发JDK、Hadoop、环境变量JAVA_HOME、HADOOP_HOME。
-### Hadoop集群搭建**完全分布式模式**
+## Hadoop集群搭建**完全分布式模式**
 + **集群有一致性，不可单独将某台虚拟机恢复快照否则集群有崩溃可能，快照应是集群快照。**
 + 虚拟机挂起前应关闭虚拟机上的所有软件。
-#### 集群规划
+### 集群规划
 + NameNode和SecondaryNameNode不要安装在同一台服务器
 +	ResourceManager也很消耗内存，不要和NameNode、SecondaryNameNode配置在同一台机器上
 + 故NanmeNode在hadoop102,SecondaryNameNode在hadoop104，ResourceManager在hadoop103
-#### 集群配置(需分发配置文件)
+### 集群配置(需分发配置文件)
 + 根据集群规划配置core-site.xml、hdfs-site.xml、yarn-site.xml、mapred-site.xml、workers文件
 + 配置工作节点：vim /opt/module/hadoop-3.1.3/etc/hadoop/workers
   添加节点名单
-##### 启动、关闭、查看集群
+#### 启动、关闭、查看集群
 + 第一次启动需格式化：hdfs namenode -format(再次格式化时需要先
   停止所有节点工作，并删除所有的$HDAOOP_HOME:data、logs文件夹)
 + 启动集群：start-all.sh(不推荐),
@@ -106,9 +106,9 @@
   - Web端查看YARN的ResourceManager
     浏览器中输入：http://hadoop103:8088
     查看YARN上运行的Job信息
-##### 集群日志聚集
+#### 集群日志聚集
 + 配置vim mapred-site.xml的历史服务器记录产生的日志，配置yarn-site.xml使得日志聚集与一个主机方便查看。配置见末尾。
-##### 内网集群时间同步
+#### 内网集群时间同步
 + 部署在外网的集群无需时间同步，可自行根据网络上时间同步
 + 选取一台主机作为时间服务器，其他主机与时间服务器同步
   - 时间主机设置：vim /etc/ntp.conf
@@ -211,6 +211,7 @@
 ## yarn
 ### 基础知识
 #### yarn工作机制
++ [yarn工作机制图解](F:\Word-Markdown\Markdown-GitHub\图片\yarn工作机制.png)
 + 节点提交任务（application）给RM申请资源，RM返回资源提交路径及applicationID。
 + 节点以job.submit()生成Job.split（任务切片，需要几个containe就有几个切片）、Job.xml、Job.jar，提交给NM，NM提交资源完毕申请运行。
 + RM生成任务(Task)并加入FIFO调度队列，调度到该Task后，选择一个NM负责运行生成一个容器在容器内运行MARppmaster成为AM，
@@ -383,8 +384,8 @@
 + 解决hadoop小文件过多导致namenode内存溢出问题
 + 归档：将多个小文件打包成一个tar文件整体，需要使用其中一个文件时使用cp命令复制即可
 
-# 配置文件
-## core-site.xml
+## 配置文件
+### core-site.xml
 ```xml
 <configuration>
 
@@ -407,7 +408,7 @@
 
 </configuration>
 ```
-## hdfs-site.xml
+### hdfs-site.xml
 ```xml
 <configuration>
 	<!-- nn web端访问地址-->
@@ -422,7 +423,7 @@
     </property>
 </configuration>
 ```
-## yarn-site.xml
+### yarn-site.xml
 ```xml
 <configuration>
     <!-- 指定MR走shuffle -->
@@ -459,7 +460,7 @@
 
 </configuration> 
 ```
-## mapred-site.xml
+### mapred-site.xml
 ```xml
 <configuration>
 	<!-- 指定MapReduce程序运行在Yarn上 -->
@@ -479,5 +480,9 @@
     <name>mapreduce.jobhistory.webapp.address</name>
     <value>hadoop102:19888</value>
 </property>
-
 ```
+
+# hadoop_HA:高可用集群
++ **核心**：hadoop依赖NA节点，要让集群7*24h可用，可在每个节点部署NA（需要实时同步数据，引入JournNode解决同步问题）
++ NN启用：有Zk，zkfc完成故障自动转移（同时存在两个NN称为脑裂，可用ssh kill解决）
++ 高可用hadoop集群规划：NN、JN、DN、ZK、ZKFC

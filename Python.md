@@ -11,14 +11,143 @@
 - 永久配置第三方网址：pip config set global.inndex-url 网址//https://pypi.tuna.tsinghua.edu.cn/simple
 ## Python库
 ### turtle库（海龟绘图）
- 1.  turtle.setup(长，宽，位置X，位置Y)//其中（x,y）为相对左上角坐标，为可选参数。
- 2. turtle.goto(x,y)//去到（x,y）绝对坐标。
- 3. turtle.bk(x)//向右X  turtle.fd(x)//向左X  turtle.circle(r,anger)以为半径走曲线。
- 4. turtle.seth(angle)转到angle度采用右手系。 turtle.left(angle)向左X度 turtle.right(angle) 向右X度
-### time库
-1. 方法
-  - time显示时间戳（是凭证文档由以下三个部分组成，文件摘要，DTS接收文件时间，DTS的数字签名）。asctime()返回一个元组，保存的时间戳可以直接读。
-  - sleep(x)休眠X秒
++ turtle.setup(长，宽，位置X，位置Y)//其中（x,y）为相对左上角坐标，为可选参数。
++ turtle.goto(x,y)//去到（x,y）绝对坐标。
++ turtle.bk(x)//向右X  turtle.fd(x)//向左X  turtle.circle(r,anger)以为半径走曲线。
++ turtle.seth(angle)转到angle度采用右手系。 turtle.left(angle)向左X度 turtle.right(angle) 向右X度
+
+### subprocess:系统命令、进程管理
++ result = subprocess.run( 
+            ["ssh", host, command], # 命令列表，相当于ssh host command
+            check=True, # 如果命令执行失败，则抛出异常
+            capture_output=True, # 捕获标准输出和标准错误
+            text=True, # 将输出作为字符串处理
+            timeout=300 
+        )
+  - 命令也可使用字符串给出，"ps -ef | grep python"
+  - result.returncode == 0 # 检测命令是否执行成功
+#### paramiko: SSH2协议，远程命令执行，代替subprocess-ssh
++ 用于替代ssh命令，通过 Python 直接执行远程命令（比subprocess调用ssh更可控
++ 创建 SSH 客户端：
+  - ssh = paramiko.SSHClient(); 
+  - ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
++ 连接到远程主机: ssh.connect(hostname="hadoop102", username="root",password="xxx") #若配置了公钥认证，则不需要密码
++ 执行命令：
+  - stdin, stdout, stderr = ssh.exec_command("ls -l")
+  - stdout.read()获取输出
+  - 可用 for cmd in cmds：一次执行多条命令
++ 文件传输：
+  ```python
+  sftp = ssh.open_sftp()
+  sftp.put("/local/path/file.txt", "/remote/path/file.txt")
+  sftp.get("/remote/path/file.txt", "/local/path/file.txt")
+  sftp.close()
+  ```
+
+### os：OS接口
++ os.path.isdir(path): 检查是否是目录
++ os.path.isfile(path): 检查是否是文件
++ os.path.dirname(path): 获取路径的父目录
++ os.path.basename(path): 获取文件名
++ os.path.abspath(path): 获取路径的绝对路径，如根据相对路径获取绝对路径
++ os.makedirs(path, exist_ok=True): 递归创建目录，True忽略已经存在的目录
++ os.getcwd()：获取当前工作目录，用于检查当前执行目录是否符合预期
++ os.environ.get("HADOOP_HOME")：获取环境变量
+  - os.environ["HADOOP_HOME"] = "/data/software/hadoop-3.3.5" #设置环境变量
++ os.system("ls"): 执行系统简单命令
++ pathlib库: 代替os.path，更简洁的路径操作
+  - 代替os.path，更简洁的路径操作（如获取父目录、文件名等）
+  - path.absolute()：获取绝对路径
+  - path.parent/path.name：获取父目录 / 文件名
+  - path.exists()：检查路径是否存在
+  - path.mkdir(parents=True, exist_ok=True)：递归创建目录
+  - path.suffixes()：获取文件拓展名
+  - path.name：获取文件名,stem()获取文件名（不带拓展名）
+
+### sys: 系统相关参数函数
++ sys.argv: 获取命令行参数，列表形式
+  - 第一个元素为sys.argv[0]是脚本名
+  - sys.argv[1:]为参数列表
++ sys.exit(num): 退出程序，可传入参数作为退出码，
+  - 默认为0正常退出，1表示异常退出
++ sys.stdout.write("hello"): 输出重定向，默认输出到控制台
++ sys.stderr.write("error"): 错误输出重定向，默认输出到控制台
+#### argparse: 命令行多参数解析
++ parser = argparse.ArgumentParser(description="脚本描述")：创建解析器。
++ 定义参数
+  - parser.add_argument("action", choices=["start", "stop", "status"], help="操作类型") #定义位置参数，choices限制参数取值范围。
+  - parser.add_argument("-d", "--date", help="日期参数") #定义可选参数，-d为短选项，--date为长选项，help为帮助信息。
+  - parser.add_argument("-v", "--verbose", action="store_true", help="详细模式") #若参数action="store_true"，则参数args.verbose被设为True，否则为False。
++ args = parser.parse_args()：解析参数
+  - {}args.action：获取参数值
+  
+### configparser：INI配置文件解析/修改
++ 读取配置：
+  - config = configparser.ConfigParser() # 创建配置解析器
+  - config.read("config.ini") # 读取配置文件
++ 获取配置
+  ```python
+  if "setting" in config: # 检查section是否存在
+      startTime = config.get("setting", "startTime") # 获取startTime配置
+  ```
++ 修改配置(配置已经存在)：
+  ```python
+  config.set("section", "key", "new_value");
+  with open("file.setting", "w") as f:
+    config.write(f) # 如generate_one_day_logs.sh中修改日志生成时间
+  ```
++ 新增配置：
+  - config.add_section("section") # 新增section节
+  - config.set("section", "key", "value") # 新增key-value对
++ config.sections()：获取所有section
+### logging: 日志模块
++ 日志级别：DEBUG < INFO < WARNING < ERROR < CRITICAL，默认输出WARNING及以上级别
+  ```python
+  # 配置日志
+  logging.basicConfig(
+      level=logging.WARNING, # 日志级别WARNING及以上
+      format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+      handlers=[
+          logging.FileHandler("app.log"), # 输出到文件
+          logging.StreamHandler() # 输出到控制台
+      ]
+  )
+  ```
++ `logger = logging.getLogger(__name__)` # 创建日志记录器
++ logging.info("启动成功")：记录正常日志
++ logging.error("命令执行失败")：记录错误日志
++ logger.debug("调试信息") 
++ logger.warning("警告信息") 
++ logger.critical("严重错误")
+
+### time库 
++ time显示时间戳（是凭证文档由以下三个部分组成，文件摘要，DTS接收文件时间，DTS的数字签名）。asctime()返回一个元组，保存的时间戳可以直接读。
++ sleep(x)休眠X秒
++ datetime: 日期时间
+  - datetime.now()：获取当前时间
+  - timedelta(days=n)：表示时间差
+    - eg:yesterday_date = (datetime.now() - timedelta(days=1)).strftime("%F")获取前一天日期 
+  - strftime("%F")：将时间转为字符串（"%F"对应YYYY-MM-DD格式）。
+  - strptime(date_str, format)：将字符串转换时间（如校验输入日期格式）
+
+#### hdfs: HDFS操作
++ InsecureClient库：
+  - client = InsecureClient("http://hadoop102:9870", user="atguigu")
+  - client.makedirs(hdfs_path) #创建目录
+  - client.status(hdfs_path, strict=False) #检测路径是否存在 
+  - client.list(hdfs_path) #列出目录下的文件
+  - client.upload(hdfs_path, local_path) #上传文件
+  - client.download(hdfs_path, local_path) #下载文件
+  - client.delete(hdfs_path, recursive=True)删除路径
+### pyarrow库: Hadoop交互
++ Parquet.hdfs as hdfs
+  - fs = hdfs.connect("hadoop102", 9870, user="atguigu") # 连接Hadoop
++ Parquet.pyquet
+  - 读取Parquet：pyarrow.parquet.read_table(hdfs_path)
+  - 写入Parquet：pyarrow.parquet.write_table(table, "hdfs://hadoop102:9870/path/to/new_file.parquet", filesystem=fs)
+  - df = table.to_pandas()  # 转换为Pandas DataFrame
+
+
 ## Python小技巧与易错
 ### 技巧
   1.  **singer in ['C','c'] #singer为C（不论大小写）**
@@ -106,31 +235,31 @@ with open('a.txt','w') as file:
 3.  修改元素 ：alist[:3] = [1,2,3,]
    
 ## 常用函数
-1.	range (起始,end,步长) eg：range（1,10,1） [1,2….,8,9] 没有起始值默认为0，步长默认为1
-2.	abs() 绝对值函数
-3.	round（x.n）四舍五入函数，n为小数位数默认为0
-4.	强制转换函数 int()  float()  bool()  str()(强制转换为字符串)
-5.	All（） 全真为true ,any() 一真为真。
-6.	Len() 返回目标长度和项目个数
-7.	Sorted() 排序函数
-8.	Type() 返回类型
-9.	Help（）获得库函数信息
-10.	Bin（）以二进制显示数据 eg：print（bin（2））#ob10
-11.	Eval（）执行一个字符表达式，返回表达式的值
-12.	Pow（）求幂值
-13.	Open（）打开文件 eg：f1 = open(“teast.txt”,”      r”)//以只读模式打开文件taset.txt
-14.	Close() 关闭文件   eg：f1.close
-15.	Read() 从打开的文件读取一个字符串 eg：printf(“文本内容：”,f1.read() )和readline读取一行。
-16.	Write（）写入一个字符串 eg：f1.write(str1)
-17. random() 召唤0.0到1.0之间的一个随机数，unitform(a,b)生成随机浮点数 randrange(a,b,步长) 
-18. zip(可迭代对象1，可迭代对象2) //把1,2元素合并在一起，返回一个zip对象。
-19. chr() 将机内码转化为字符，ord()可将字符转换为机内码。
-20. lower（）大写转换为小写，upper（）小写转换为大写。
-21. **进制转换**int("111",2)//将二进制转换为10进制,bin oct hex将二进制，八进制，十六进制转换为十进制。
-22. eval() 计算字符串的值。
-23. reverse() 对可迭代对象进行翻转。
-24. ord 通过 字符 找到对应的 序号
-chr 通过 序号 找到对应的 字符
++	range (起始,end,步长) eg：range（1,10,1） [1,2….,8,9] 没有起始值默认为0，步长默认为1
++ abs() 绝对值函数
++ round（x.n）四舍五入函数，n为小数位数默认为0
++ 强制转换函数 int()  float()  bool()  str()(强制转换为字符串)
++	All（） 全真为true ,any() 一真为真。
++	Len() 返回目标长度和项目个数
++	Sorted() 排序函数
++	Type() 返回类型
++	Help（）获得库函数信息
++	Bin（）以二进制显示数据 eg：print（bin（2））#ob10
++	Eval（）执行一个字符表达式，返回表达式的值
++	Pow（）求幂值
++	Open（）打开文件 eg：f1 = open(“teast.txt”,”      r”)//以只读模式打开文件taset.txt
++	Close() 关闭文件   eg：f1.close
++	Read() 从打开的文件读取一个字符串 eg：printf(“文本内容：”,f1.read() )和readline读取一行。
++	Write（）写入一个字符串 eg：f1.write(str1)
++ random() 召唤0.0到1.0之间的一个随机数，unitform(a,b)生成随机浮点数 randrange(a,b,步长) 
++ zip(可迭代对象1，可迭代对象2) //把1,2元素合并在一起，返回一个zip对象。
++ chr() 将机内码转化为字符，ord()可将字符转换为机内码。
++ lower（）大写转换为小写，upper（）小写转换为大写。
++ **进制转换**int("111",2)//将二进制转换为10进制,bin oct hex将二进制，八进制，十六进制转换为十进制。
++ eval() 计算字符串的值。
++ reverse() 对可迭代对象进行翻转。
++ ord 通过 字符 找到对应的 序号
++ chr 通过 序号 找到对应的 字符
 ## **模块（python的代码块）**：
 ### 模块导入：
  + from 模块 import 函数(其中*表示全导入)
@@ -158,15 +287,15 @@ chr 通过 序号 找到对应的 字符
     //https://pypi.tuna.tsinghua.edu.cn/simple
    + 永久配置第三方网址：pip config set global.inndex-url 网址
 ## **类**：
-1. 类的实例化：实例 = 类名()
-   + **面向对象的编程：设计类模块实例化后解决问题。**
-2. 
-  +  Class (class首字母大写类名)(继承的父类,父2)：
-        成员名
-        成员
-      **def** 成员函数（**调用用点运算符即可**）
-  + 继承：**无特定父类用object，当继承了多个父类有同名方法时以第一个父类为准**  
-  + 复写：子类中定义同名成员。
++ 类的实例化：实例 = 类名()
+   - **面向对象的编程：设计类模块实例化后解决问题。**
+
++  Class (class首字母大写类名)(继承的父类,父2)：
+      成员名
+      成员
+    **def** 成员函数（**调用用点运算符即可**）
++ 继承：**无特定父类用object，当继承了多个父类有同名方法时以第一个父类为准**  
++ 复写：子类中定义同名成员。
 
 + **以下划线开头的成员有特殊的含义**
   -  _xxx(单下划线开头):这样的对象叫做保护变量，不能用'from module import *'导入，只有类对象和子类对象能访问这些变量；
@@ -280,10 +409,10 @@ class MyClass:
     @my_property.deleter
     def my_property(self):
         del self._value
-@property 装饰器用于定义属性的 getter 方法。
-@<property_name>.setter 用于定义属性的 setter 方法。
-@<property_name>.deleter 用于定义属性的 deleter 方法。
-这种装饰器允许你在访问属性时执行自定义逻辑，以及在属性赋值或删除时执行相应的逻辑。
+    @property 装饰器用于定义属性的 getter 方法。
+    @<property_name>.setter 用于定义属性的 setter 方法。
+    @<property_name>.deleter 用于定义属性的 deleter 方法。
+    这种装饰器允许你在访问属性时执行自定义逻辑，以及在属性赋值或删除时执行相应的逻辑。
   ```
 
 ## 迭代
@@ -532,7 +661,7 @@ def __iter__(self):
    f.writelines(seq)
    f.close()
    
-6.	### 打开方式 ###
+### 文件打开方式 
 | mode | 描述 |
 | :--- |:---:|
 |t|	文本模式 (默认)。|
@@ -566,64 +695,8 @@ def __iter__(self):
 ## 代码折叠
 + 我们观察一下代码左侧的折叠线。这条细线显示在代码左侧，标记了代码块区域。单击一下折叠线，可以展开或折叠代码块。
 
-# 网页操作
-1.	网页请求方式与传输协议：
-+ GET，获取查询信息，参数在URL中，只需一次发送和返回响应速度快。
-- POST，参数在request body 中，可发送的请求信息多。
-- TCP：基于IP的连接数据传递，可靠性高。
-- UDP：无需连接直接发送文件，如QQ。
-2.	Ctrl+U  打开源码页面
-3.	网页的结构：HTML（超文本标记） CSS(层叠样式表) Jscript(活动脚本语言)
-- HTML（网页框架用<>括起来）
-Eg：<html>..</html>    表示标记起来的元素是网页
-		<内容>..</内容>    表示用户可见内容div(框架) p(段落) li(列表) img(图片) hl(标题)  <a href =””>…</a>表示超链接
-- CSS表示样式，如<style 类型 =”txt/css”>表示下面将引用一个CSS在CSS中定义了对应的样式。
-- Jscript(功能)；交互功能和特效都在JS中。 
-4.	端口：
-- 系统保留端口（0~1023）：有确切的定义对应者相应的服务。如80 web服务。
-- 动态端口：网络通信时分配给应用使用。
-5.	Elements元素面板：当前的网页结构，可以实时修改网页内容，如将密码输入框type的属性由password改为text即可查看明文密码。
-6. <b>	
-- Network 网络面板：记录发起网页请求request后得到的各种请求资源信息。
-- Controls：控制Network的外观和功能。
-- Filters：控制Requests Table具体显示哪些内容。
-- All：返回当前页面全部加载的信息，就是一个网页全部所需要的代
- 码、图片等请求。
-- XHR：筛选Ajax的请求链接信息，前面讲过Ajax核心对象
- XMLHTTPRequest，XHR取于XMLHTTPRequest的缩写。
-- JS：主要筛选JavaScript文件。>CSS：主要是CSS样式内容。
- Img：是网页加载的图片，爬取图片的URL都可以在这里找到。
-- Media：是网页加载的媒体文件，如MP3、RMVB等音频视频文件资源。
- Doc：是HTML文件，主要用于响应当前URL的网页内容。
-- Overview：显示获取到请求的时间轴信息，主要是对每个请求信息在服务器的响应时间进行记录。这个主要是为网站开发优化方面提供数据参考，这里不做详细介绍。
-- Requests Table(实际就是name下一排文件)：按前后顺序显示所有捕捉的请求信息，单击请求信息可以查
-看该详细信息每条请求信息划分为以下5个标签。
-* Headers：该请求的HTTP头信息。
-* Preview：根据所选择的请求类型（JSON、图片、文本）显示相应的预览。
-* 
-***
-+ js后缀为JavaScript文件
-+ All：返回当前页面全部加载的信息，就是一个网页全部所需要的代
-码、图片等请求。
-+ XHR：筛选Ajax的请求链接信息，前面讲过Ajax核心对象
-XMLHTTPRequest，XHR取于XMLHTTPRequest的缩写。
-+ JS：主要筛选JavaScript文件。>CSS：主要是CSS样式内容。
-+ Img：是网页加载的图片，爬取图片的URL都可以在这里找到。
-+ Media：是网页加载的媒体文件，如MP3、RMVB等音频视频文件资源。
-+ Doc：是HTML文件，主要用于响应当前URL的网页内容。
-***
-* Response：显示HTTP的Response信息。
-* Controls：控制Network的外观和功能。
-* Filters：控制Requests Table具体显示哪些内容。
-- Summary：显示总的请求数、数据传输量、加载时间信息。</b>
-7.	Money内存面板：查看web应用或页面执行时间及内存使用情况。
-8.	Application应用面板：记录网页加载的所有资源信息。
-9.	Response响应面板：资源未进行格式处理的内容。
-10.  为让标签不起作用，前多输入了一个空格。
- - < !DOCTYPE html>#声明为 HTML5 文档\ 
- -   < html>#元素是 HTML 页面的根元素
-- < head># 元素包含了文档的元（meta）数据
-- < meta charset="utf-8"># 元素可提供有关页面的元信息（meta-info主要是描述和关键词
-- < title>Python< /title>#元素描述了文档的标题
-- < /head>
-- < body>#元素包含了可见的页面内容
+## panda库
+
+## conda库
+
+## numpy库

@@ -3,8 +3,12 @@
 ***
 
 # Flume
-+ 分布式的海量日志采集、聚合和传输的系统,基于流式架构
++ 分布式的海量日志采集、聚合和传输的系统,基于流式架构,**实时监控flume软件：Ganglia**
++ (flume配置模板查询网站)：[http://flume.apache.org/FlumeUserGuide.html],找到对应的组件，点击进去，找到Configuration Options，即可查看配置模板
 + [flume文档查看地址](http://flume.apache.org/FlumeUserGuide.html)
++ 数据读取与传输：
+  - 事务机制：保存在data、checkpoint文件夹中
+  - 读取偏移量：以一个json文件保存偏移量，数据文件单独保存。
 + Event:传输单元，Flume数据传输的基本单元，以事件的形式将数据从源头送至目的地。
 + 架构
   - Flume 的基本部署单元是 Agent，每个 Agent 由三个核心组件构成：Source、Channel(缓冲) 和 Sink，数据流通过它们形成单向管道（Source → Channel → Sink）
@@ -17,6 +21,7 @@
   - Replicating：将source过来的events复制到所有的channel中
   - Multiplexing：根据event的属性，将event路由到不同的channel中
 + source自定义：实现Source接口，并实现相应方法
+
 ## flume调优&事务机制
 ### 调优
 + Source：
@@ -147,7 +152,10 @@
 	- -Dflume.root.logger==INFO,console ：-D表示flume运行时动态修改flume.root.logger参数属性值，并将控制台日志打印级别设置为INFO级别。日志级别包括:log、info、warn、error。
 
 
-
+## 问题解决：
++ flume零点漂移问题：
+  - 问题描述：flume读取hdfs日志，发现日志时间与当前时间相差8小时
+  - 解决方案：在flume配置文件中添加hdfs.useLocalTimeStamp = true
 
 
 

@@ -1,12 +1,63 @@
 [toc]
 
+# 常用类
+## string（创建后不可修改）
+### str创建
++ var str = "string new"
++ var str = new String() //创建一个空字符串
+### string常用函数
++ length() //返回字符串长度
++ toCharArray() //转化为字符数组
++ **substring(beginIndex,endIndex)**//截取being到end字符子串，end不写默认为结束
++ **indexOf(str，int fromindex,int endindex)** //查找字符串位置,fromindex为可选参数指定从fromindex开始查找，endindex结束查找。
++ 转换为数字：Integer.parseInt()、Integer.valueOf()、Double.parseDouble()、Long.parseLong()
+  - **Integer.parseInt(str,2) //将字符串(二进制)转化为整数，同样的可转换8进制、16进制。**
++ split(str) //根据str分割字符串，返回字符串数组，**支持正则**
++ lastindexOF(str，int fromindex,int endindex) //查找字符串最后一次出现的位置
++ toUpper/toLower //大小写转化
++ equals(str2) //字符串比较
++ concat(str) //链接字符串
++ **replace(oldchar,newchar) //替换字符串**
+  - eg：`str.replace("a","b")`//a替换为b,replace不支持正则
+  - `replaceFirst("\\d+", "")` //替换的第一个数字替换为空，**支持正则**
+  - `replaceAll("\\d+", "")` //将字符串中的所有数字替换为空，**支持正则**
++ charAt(index) //返回下标为index的字符串
+  - charAT(index) - '0' //将字符转化为数字
++ trim() //去除前后空白字符
++ repeat(intX) //返回重复X次的子字符串
++ isEmpty() //判断字符串是否为空,Ture or False
++ isBlank() //判断字符串是否含空白字符，Ture or False
++ strip() //删除前空格和后空格
++ stripLeading() //删除前空格
++ stripTrailing() //删除后空格
+## StringBuilder 可变字符串类
+### 新增方法
+
+## Interge
++ Integer.parseInt(str) //将字符串转化为整数
+
+## math
++ math.random()：返回一个随机数。
+  - nextBoolean()：返回一个随机布尔值。
+  - nextInt()：返回一个随机整数。
+  - nextDouble()：返回一个随机浮点数。
+  - nextLong(); 返回一个长整数。
++ Math.abs() //返回绝对值
++ Math.ceil() //向上取整
++ Math.floor() //向下取整
++ Math.round() //四舍五入
++ Math.pow(double a,double b) //返回a的b次幂
++ Math.sqrt() //返回平方根
++ Math.max() //返回最大值
++ Math.min() //返回最小值 
+
 # Java基础
++ 时间是相对的，时间戳是绝对的，空值用null
 ## 技巧
 + 重写每一个类tostring方法，方便测试。1000L表示long类型，项目开发不使用sout用日志记录信息
 + 包的命名：com.公司名.项目名.模块名
 + Thread.sleep(1000);//当前线程休眠1秒，用于控制数据生成速度。
 + Calendar.getInstance().getTimeInMillis()//获取当前时间戳
-+ 类型擦除：当你使用泛型（如List<String>）时，Java编译器在编译阶段会检查类型安全，确保你放入和取出元素类型正确。但编译完成后，泛型类型信息会被擦除，替换为原生类型（如List）或上界类型（如Object或Number）。当运行时JVM看不到泛型类型信息，只能看到原生类型或上界类型，导致了运行时类型信息缺失的代价。（使用TypeHint类可在运行时提供类型信息）
 + Lambda 表达式的基本结构：(参数列表) -> { 函数体 }
   - nums.sort((a, b) -> a - b);//sort需要的是compare方法，lambda表达式直接实现了compare方法。
   - list.forEach(s -> System.out.println(s));//历遍输出数组元素
@@ -14,14 +65,36 @@
   - .equals()：比较字符串内容是否相同
 + SAM(单一抽象接口)：只有一个抽象方法的接口，可以用来实现Lambda表达式，通过接口来实现了灵活的函数式编程。
 + Ctrl+o:重写父类方法
++ copy->pasteSpecial:复制全类名。
++ Interge.MIN_VALUE：int的最小值
+### 重要知识
++ **类型擦除**：当你使用泛型（如List<String>）时，Java编译器在编译阶段会检查类型安全，确保你放入和取出元素类型正确。但编译完成后，泛型类型信息会被擦除，替换为原生类型（如List）或上界类型（如Object或Number）。**当运行时JVM看不到泛型类型信息，只能看到原生类型或上界类型，导致了运行时类型信息缺失的代价**。（使用TypeHint类可在运行时提供类型信息）
+  - 应用集合类框架使用类型擦除实现，故定义时不能使用基本类型(如int因其不是object的子类)，需要使用对应的包装类( Integer，,Character等)。
+  - 泛型类/方法：编译时检查类型，运行时擦除类型。
+  - 通配符：List<?> wildList -> wildList
+  - 静态方法不支持泛型，数组不直接支持但可以`List<String>[] stringLists = (List<String>[]) new List<?>[1];`实现
++ 多态：继承、方法重写、父类引用指向子类对象
+  - 多态使用：
+    - 方法参数多态：将父类作为参数，可以接收任意子类对象。eg：`public static void feedAnimal(Animal animal)`
+    - 方法返回类型多态：方法返回父类，实际返回的是子类对象。eg：`public static Animal getAnimal(String type)`
+    - 集合中的多态：使用父类类型声明集合，可以存放不同子类对象。eg：` List<Animal> animals = new ArrayList<>();`
+    - 接口多态：new不同子类。
++ 线程安全：在多线程环境时，必须考虑当前使用的方法是否是线程安全的，否则会导致一会正确一会儿错误。
 ## 问题解决
 + Cannot run program "D:\idea\JDK\bin\java.exe" (in directory " "C:\Users\杨雨糯\AppData\Local\JetBrains\IntelliJIdea2024.1\compile-server"): CreateProcess error=2, 
   - 问题描述：环境变量已正确配置、JDK8以正确安装、IDEA已正确配置JDK，但运行程序时报错找不到指定文件，显示使用路径为以前的jdk路径，更换jdk17后可正常使用，但jdk8仍报错。
   - 解决方案：IDEA残留旧的JDK配置，删除jdk.table.xml文件后可正常使用。（文件路径：C:\Users\杨雨糯\AppData\Roaming\JetBrains\IntelliJIdea2024.1\options\jdk.table.xml）
++ **==与equals的区别**：
+  - ==比较的是两个对象的内存地址是否相同，equals比较的是两个对象的内容是否相同。
+  - 注意除数组外，list、map、set等通过get方法得到的是一个对象，不可直接用if(arr.get(1)==arr.get(2))比较他们的值是否相同，应该用arr.get(1).equals(arr.get(2))比较，即使它保存的是int，也使用了它的包装类型Integer。
+## 开发规范
++ 注释：
+  - //TODO：标记待改进的地方
+  - //FIXME：标记需要修复的地方
+  - //HACK：标记临时解决
+  - //NOTE:标记注释
 ## 专业术语及设计思想
-### 设计思想
-#### 模拟修饰器设计模式（处理流为例）：
-+ 1、设计抽象类 2、设计继承抽象类的处理不同情况的处理子类 3、设计处理类，处理类中包含一个抽象类的对象，通过调用抽象类的方法实现处理。**Java是单继承的**
+
 #### 面对对象三大特征
 + 封装：将数据和方法封装在内部为一个类，程序的其他部分仅有通过授权的方法才能操作数据
     - 封装步骤：属性私有化private属性，提供public方法提供外部访问方法（getXXX、setXX）外部访问方法可加入身份验证代码 
@@ -36,8 +109,7 @@
     - 转型：向上转型父类接受子类对象运行类型为子类对象，向下转型子类接受父类的运行类型**需要强制转换**。
 #### 动态绑定：
 + 在运行时根据对象的实际类型来调用相应的方法，而属性哪里定义用哪里无动态绑定。
-#### 代理
-+ 代理类与被代理类实现同一个接口，代理类实现重要方法。代理类中包含被代理类的对象，通过调用被代理类的方法实现代理。
+
 ### 关键字
 + implements:实现接口关键字（class a implements Runnable）
 ### interface 注解
@@ -318,8 +390,9 @@
 + 设置字体大小：设置-字体
 + 设置项目编码为UTF-8可使用中文。
 + Ctrl+shift+ALT+S：更换JDK。
-#### 快捷键
-+ ctrl + j:查看可用方法快捷键
+#### **快捷键**
++  ctrl + j:查看可用方法快捷键
++  Ctrl + q：查看方法文档，含返回值
 +  sout+enter：生成输出语句。
 +  Ctrl+alt+L:格式化代码。
 +  **鼠标放在类名：alt+insert：生成构造器。**
@@ -329,7 +402,8 @@
 +  **alt+enter:自动导入包**（需要先配置设置->编译器->自动导入->勾选自动添加的两个方框）。
 +  Ctrl+X：删除一行
 +  Ctrl+D：复制当前行
-+  Ctrl+/:注释、
++  Ctrl+/:注释
++  Ctrl+P：**查看方法参数**（光标在括号内）
 +  Ctrl+O：重写方法
 +  Ctrl+I：实现方法
 +  Ctrl+F12：查看文件结构
@@ -370,21 +444,30 @@
   - 动态代理
 
 ### 常用方法与单词
++ 不支持嵌套定义
 #### 常用方法
 + .equals(obj)//判断两个对象是否相等
 #### 单词
 + mapper:方法
 
-## 方法格式
+## 方法格式（**mian中不能定义方法**）
++ java不支持嵌套定义方法，方法必须定义在类中。
 + 修饰符 返回值类型 方法名(参数类型 参数名){
     方法体
     return 返回值;
-}
+  }
+  ```java
+  private void method1(){
+    System.out.println("method1");
+  }
+  ```
+
 ### 修饰符
 + public：公共的，所有类都可以访问。
 + protected：受保护的，只有同一包和子类可以访问。
 + default（默认）：同一包内可见，不同包需要子类继承。
 + private：私有的，只有同一类可以访问。
++ static：静态的，不需要创建对象就可以访问。
 ### 返回值类型
 + void：无返回值。
 + 基本数据类型：返回对应的基本数据类型。
@@ -396,7 +479,7 @@
 + 单行注释：//
 + 多行注释：/* */
 
-## 变量与字符
+## 变量与字符:变量，需重复使用
 ### 变量类型
 + 基本数据类型：byte（1字节）、short（2字节）、int（4字节）、long（8字节）、float（4字节）**定义时必须加上f**、double（8字节）、boolean（布尔型）。
 + **常量**：变量定义前加上final关键字，常量值在定义后不能被修改。
@@ -425,30 +508,53 @@
 ### 高精度
 + java.math.BigInteger
 + java.math.BigDecimal
-### 数组
+### **数组**
 #### 定义与初始化
 + 定义：数据类型[] 数组名 = new 数据类型[数组长度];
+  ```java
+  //定义一个长度为5的int类型数组
+  int [] arr = new int[5]; 
+
+  //定义一个长度为4的String类型数组
+  String[] cities = {"北京", "上海", "广州", "深圳"}; 
+
+  // 二维数组
+  int[][] scores = {
+      {85, 90, 78},
+      {92, 88, 95},
+      {76, 85, 80}
+  };
+
+  // 动态创建数组
+  int length = scannerIN.nextInt();
+  double[] dynamicArray = new double[length];
+  ```
 + 初始化：
  - 静态初始化：
-```
-int arr
-```
+  ```java
+  int arr
+  ```
   - 动态初始化
-```
+  ```java
+  arr [0] = new int[1]；
 
-arr【0】= new int【1】；
-
-int [][] arr = new int[3][4];
-arr【0】【0】= 1；
-```
+  int [][] arr = new int[3][4];
+  arr[0][0] = 1；
+  ```
 + 赋值：数组名[下标] = 值;
 #### 查看数组长度、拷贝数组、数组排序、转换为字符串
 + 数组名.length
-+ 拷贝：
- - System.arraycopy(源数组，源数组起始位置，目标数组，目标数组起始位置，复制长度)
- - arr2=arr1
-+ Arrays.sort(数组名);
-+ Arrays.toString(数组名);
++ 全拷贝：
+ - int[] arr2 = Arrays.copyOf(arr1, arr1.length); // 完整复制，当以1000代替arr1.length时，可对数组扩容。
++ 部分拷贝：
+ - int[] arr3 = Arrays.copyOfRange(arr1, 1, 4); // 复制索引1到3的元素，若元素不足用默认值填充
+ - Arrays.copyOfRange(source,1,arr2,0,3)//将source数组中索引1开始元素复制到arr2数组中0处，共复制3个元素。
++ Arrays.sort(arr1);//**arr1数组排序**
++ Arrays.toString(arr1);//arr1数组转换为字符串
++ Arrays.binarySearch(arr1，3);//**二分查找，值为3的索引**
++ Arrays.asList(arr1);//将数组转换为List
+  - List转数组：List.toArray(new int[0]);
++ Arrays.fill(arr1, 3);//以3填充将数组arr1 
 ### 变量类型转换
 + 自动类型转换：将容量小的类型自动转换为容量大的数据类型。
 + 强制类型转换：将容量大的类型强制转换为容量小的数据类型，需要强制转换符。(eg:a=(int)b;)
@@ -468,15 +574,30 @@ arr【0】【0】= 1；
 + 三元运算符：a?b:c。
 
 ## 对象类型（list、set、dict）
++ import java.util.*;
++ 长度：数组用 .length，字符串用 **.length()，集合用 `.size()**
 ### 对象框架Map和Collection（对象中需要实现的接口）
++ **集合框架使用泛型实现**：java泛型有一个重要限制：不能使用基本类型作为类型参数用于对应包装类型。泛型擦除：泛型编译时会被擦除转换为Object类型，基本类型不是object的子类，包装类型是object的子类。
+  - **int -> Integer, char -> Character、首字母大写(float、double、long、byte、boolean)**
 #### Collection接口
-+ add(E) : 添加元素e,remove()、isEmpty、size(返回元素个数)、contains(X)(是否存在元素X)、iterator()（封装为迭代器返回）、
-+ addALL、removeALL、removeIF(删除符合条件的数据)、containsALL(X)（是否存在元素集合X）、clear(清空集合)、retain(A)（仅保留A集合中的元素）
-+ 常用方法
++ **增加、删除、修改返回值为boolean表示是否成功**，可通过快捷键查看：鼠标在方法处Ctrl + q：查看方法文档，含返回值
++ add(E) : 添加元素e
+  - addall()
++ remove():删除元素
+  - removeall()
+  - removeif(V<60)//删除符合条件的数据
++ isEmpty():检查是否为空、
++ size(返回元素个数)
++ contains(X)(是否存在元素X)
+  - containsall(X) //是否存在元素集合X
++ min/max(list,(Comparator))
++ iterator()（封装为迭代器返回）
++ clear(清空集合)
++ retain(A)（仅保留A集合中的元素）
++ 排序
   - Collections.sort(List1) //对List1中的元素进行排序
-  - Collections.sort(List1,Comparator) //对List1中的元素进行排序，Comparator为比较器
-  - Colllections.shuffle(List1) //对List1中的元素进行随机排序
-  - Collections.min/max(list,(Comparator))
+  - sort(List1,Comparator) //对List1中的元素进行排序，Comparator为比较器
+  - shuffle(List1) //对List1中的元素进行随机排序
 #### Map接口
 + put(K,V) : 添加元素(K,V)、get(K)（返回K对应的V）,remove(K)（删除K对应的V）、contaionsKey(K)(是否存在K键)、contaionsValue(V)(是否存在V值)、size(返回键值对个数)、isEmpty(是否为空)、replace(K,V)(替换K对应的V)
 + putAll(Map\<K,V>)、clear(清空)、keySet(返回键集合)、values(返回值集合)、entrySet(返回键值对集合)
@@ -511,6 +632,7 @@ while(iterator1.hasNext()){
   ```
 
 ### list
++ **size() //返回长度**
 + add(index,x)//在指定位置插入元素x、
 + get(index)//返回指定位置元素、
 + set(index,x)//修改指定元素值、
@@ -518,8 +640,38 @@ while(iterator1.hasNext()){
 + indexOf(x)//查找X第一次出现位置
 + lastIndexOf(x)//查找X最后一次出现位置
 + subList(from,to)//返回从from到to的子列表。
+```java
+  // 方式1：使用多态（推荐）
+  List<String> list1 = new ArrayList<>();
+
+  // 方式2：直接使用实现类
+  ArrayList<String> list2 = new ArrayList<>();
+
+  // 创建时指定初始容量20
+  List<Integer> list3 = new ArrayList<>(20); 
+  
+  //使用 Collections 工具类
+  // 创建空列表
+  List<String> emptyList = Collections.emptyList();
+  // 创建单元素列表
+  List<String> singletonList = Collections.singletonList("唯一元素");
+
+  //使用 Stream API
+  List<String> streamList = Stream.of("一", "二", "三")
+                                .collect(Collectors.toList());
+  
+  //创建不可变数组
+  List<String> fixedList = Arrays.asList("A", "B", "C");
+  //java9
+  List<String> immutableList = List.of("苹果", "香蕉", "橙子");
+  //使用Collections 工具类
+  List<String> unmodifiableList = Collections.unmodifiableList(mutableList)
+  ```
 #### ArrayList最常用的list实现类
-+ list\<string> list1 = new ArrayList\<string>();
++ 使用数组保存数据、有序集合、允许重复、允许保存null、线程不安全多线程时需要手动同步
+  ```java 
+  List<String> list1 = new ArrayList<>();
+  ```
 + listiterator()方法可返回ListIterator对象，该对象可用来双向遍历List。
   - 为iterator的子类。
   - hasPrevious():返回是否有前一个元素。
@@ -528,8 +680,10 @@ while(iterator1.hasNext()){
   - previousIndex():返回前一个元素的索引。
   - remove():删除当前元素。
   - set():修改当前元素。
-#### Linklist单链表
-+ LinkedList\<String> list = new LinkedList\<String>();
+#### Linklist单链表:频繁增删
+  ```java
+  LinkedList<String> list = new LinkedList<String>();
+  ```
 + addFirst(x)/addLast(x) //在头部/尾部插入元素x
 + getFirst()/getLast() //返回头部/尾部元素
 + removeFirst()/removeLast() //删除头部/尾部元素
@@ -547,12 +701,22 @@ while(iterator1.hasNext()){
 
 
 ### Set类
++ 常用方法
+  - contains(X) //是否存在元素X，条件仅不可用
+  - toArray() //转换为数组返回
+  ```java
+  //创建一个HashSet
+  Set<String> set1 = new HashSet<>();
+
+  // 创建一个TreeSet
+  Set<String> set2 = new TreeSet<>();
+  ```
 #### HastSet子类(无序散列集合)
 + s1.addALL(s2):求s1和s2的并集。
 + s1.removeAll(s2):求s1和s2的差集。
 + s1.retainAll(s2):求s1和s2的交集。
 + s1.containsAll(s2):判断s1是否包含s2。 
-#### TreeSet子类(红黑树集合)
+#### TreeSet子类(红黑树集合，有序集合)
 + TreSet(c/比较器/有序集) //按字母序/比较器/有序集顺序生成树集合
 + first返回第一个元素、last返回最后一个元素
 + subSet(from,to)返回从from到to的有序子集
@@ -564,6 +728,20 @@ while(iterator1.hasNext()){
 + offer(e)插入元素E
 + peek()返回队头元素
 + poll()返回并删除队头元素
+
+```java
+// LinkedList（普通队列）
+Queue<Integer> queue1 = new LinkedList<>();
+
+// PriorityQueue（优先级队列）
+Queue<Integer> queue2 = new PriorityQueue<>();
+
+// ArrayDeque（双向队列）
+Deque<Integer> deque = new ArrayDeque<>();
+
+// ConcurrentLinkedQueue（线程安全队列）
+Queue<String> concurrentQueue = new ConcurrentLinkedQueue<>();
+```
 #### Dqueue双向队列
 + addFirst(e)/addLast(e)、getFirst()/getLast()....
 ##### LinkedList双向链表(线性表实现Dqueue)
@@ -575,11 +753,76 @@ while(iterator1.hasNext()){
 
 ### map
 + **迭代器**：map.keySet().iterator()对键集进行迭代、map.entrySet().iterator()、map.values().iterator()//对值进行迭代
-#### HashMap
+  ```java
+  // 创建一个HashMap
+  Map<String, Integer> map = new HashMap<>();  
+  // 创建一个TreeMap（会自动排序）
+  Map<String, Integer> treeMap = new TreeMap<>();
+  // 创建一个LinkedHashMap（保持插入顺序）
+  Map<String, Integer> linkedMap = new LinkedHashMap<>();
+  ```
++ map方法
+  - map.put(K,V) //覆盖插入键值对
+    - map.putIfAbsent(K,V) //若K不存在则插入键值对
+  - map.get(K) //返回K对应的V
+    - getOrDefault(K,0) //返回K对应的V，若不存在则返回默认0
+  - map.replace(K,V) //**替换K对应的V**
+    - replaceall((k,v) -> v*2 ) //将所有值2
+  - map.merge("java", 1, Integer::sum) //**归并，若存在则进行归并V值**
+  - map.remove(K) //删除K对应的键值对
+  - map.containsValue(1);  //判断是否包含值1
+  - map.keySet(); //**返回键集**
+  - map.values(); //**返回值集，注意是values**
+  - map.isEmpty(); //判断是否为空
+  - map.clear();
++ map遍历
+  ```java
+  //for增强
+  for(Map.Entry<String, Integer> entry : map.entrySet()) {
+      System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+  }
+
+  //foreach
+  map.forEach((key, value) -> {
+      System.out.println("Key: " + key + ", Value: " + value
+  })
+
+  //值遍历
+  for (Integer value : map.values()) {
+      System.out.println("Value: " + value);
+  }
+
+  //键遍历
+  for (String key : map.keySet()) {
+      System.out.println("Key: " + key);
+  }
+  
+  //使用迭代器
+  Iterator<Map.Entry<String, Integer>> iterator = map.entrySet().iterator();
+  while (iterator.hasNext()) {
+      Map.Entry<String, Integer> entry = iterator.next();
+      System.out.println(entry.getKey() + ": " + entry.getValue());
+  }
+
+  ```
+#### HashMap：无序查询快
++ 允许一个null键，允许多个null值
 + 创建：HashMap(int x)//x为初始容量、HashMap(int x,float f)//x为初始容量、f为负载因子(0~1之间，默认为0.75)、HashMap(Map m)//m为另一个map
-#### TreeMap
+
+#### TreeMap：按key排序
++ 不允许null键，允许null值
 + 创建：TreeMap():根据字母序创建空字典、TreeMap(Map m):根据字母序创建包含m的树字典、TreeMap(Comparator c):根据比较器c创建空字典
   
+
+#### LinkedHashMap：按插入顺序
++ 允许一个null键，允许多个null值
+
+#### ConcurrentHashMap：线程安全map
+
+
+
+
+
 ## 异常处理、断言、上下文管理
 ### 异常分类
 + 检查异常：编译错误。
@@ -626,20 +869,33 @@ for (int i ; i<10;i++){
 }
 ```
 
-# 输入与输出
+# **输入与输出**
 ## 常用方法
-### 输入（需要先创建一个scanner实例）
-+ Scanner scanner = new Scanner(System.in);//创建一个扫描器实例
-+ s.nextInt();//输入一个整数
-+ s.nextDouble();//输入一个浮点数
-+ s.next();//输入一个字符串
-+ s.nextLine();//输入一行字符串
+### 输入
++ 需要先创建一个scanner实例，import java.util.*
+  - Scanner scanner = new Scanner(System.in);//创建一个扫描器实例
+  - s.nextInt();//读入一个整数
+  - s.nextDouble();//读入一个浮点数，nextFloat
+  - s.next();//读入一个字符串
+  - s.nextLine();//读取一行输入，直到遇到换行符，**若先调用了nextInt()、nextDouble()、next()，则nextLine()会读取到换行符，需再次调用nextLine()来读取下一行。**
+  - s.next():读取下一个单词，以空格、制表、换行为分隔符。
+  - s.nextBoolean():读取下一个布尔值
+  - **hasNext():检查是否还有下一个输入**
+  - **hasNextInt():检查是否还有下一个整数输入**
++ import java.io.*;
+  ```java
+  BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+  String[] stringNumbers = reader.readLine().split("\\s+");//读取一行输入,并转换为字符串数组
+  int[] numbers = Arrays.stream(stringNumbers).mapToInt(Integer::parseInt).toArray();//将字符串数组转换为整数数组
+  ```
+
 ### 输出
 + System.out.println("小明今年刚满" + i + “岁”);//输出一个字符串，并换行
 + System.out.print();//输出一个字符串，不换行
-+ System.out.printf();//格式化输出
 + System.out.format();//格式化输出
-+ System.out.printf("%d",a);//输出一个整数  
++ System.out.printf("%d",a);//格式化输出一个整数  
++ System.out.println(String.format("hello%d", num));
+
 
 ## 标准输入流System.in
 + 对应键盘
@@ -856,39 +1112,7 @@ public class OuterClass{
 ### 接口内部类：
 + 定义在另一个类中的接口位置的类。
 
-# 常用函数
-+ math.random()：返回一个随机数。
-  - nextBoolean()：返回一个随机布尔值。
-  - nextInt()：返回一个随机整数。
-  - nextDouble()：返回一个随机浮点数。
-  - nextLong(); 返回一个长整数。
 
-# 常用类
-## string（创建后不可修改）
-### str创建
-+ var str = "string new"
-+ var str = new String() //创建一个空字符串
-### string常用函数
-+ length() //返回字符串长度
-+ toCharArray() //转化为字符数组
-+ substring(beginIndex,endIndex)//截取being到end字符子串，e
-+ nd不写默认为结束
-+ indexOf(str，int fromindex,int endindex) //查找字符串位置,fromindex为可选参数指定从fromindex开始查找，endindex结束查找。
-+ lastindexOF(str，int fromindex,int endindex) //查找字符串最后一次出现的位置
-+ toUpper/toLower //大小写转化
-+ equals(str2) //字符串比较
-+ concat(str) //链接字符串
-+ replace(oldchar,newchar) //替换字符串
-+ charAt(index) //返回下标为index的字符串
-+ trim() //去除前后空白字符
-+ repeat(intX) //返回重复X次的子字符串
-+ isEmpty() //判断字符串是否为空,Ture or False
-+ isBlank() //判断字符串是否含空白字符，Ture or False
-+ strip() //删除前空格和后空格
-+ stripLeading() //删除前空格
-+ stripTrailing() //删除后空格
-## StringBuilder 可变字符串类
-### 新增方法
   
 # **文件操作与IO流**
 ## 文件操作
@@ -933,6 +1157,7 @@ public class OuterClass{
 |输入流| Reader | InputStream |
 |输出流|Writer | OutputStream |
 + 由抽象基类可派生出其他子类。[Javaclass图片](G:\Word-Markdown\Markdown-GitHub\图片\Javaclass.png)
++ main() throws IOException //抛出IO异常
 
 + 分类：节点流（对特定数据源进行操作）、 包装/处理流（通过对节点流包装为已有的流提供强大处理能力，其有一个Reader/Writer型属性in/out可用于封装一个节点流。））
 
@@ -1101,6 +1326,33 @@ public class OuterClass{
 + new InputStreamReader(new FileInputStream("filepath"),"utf-8") //将FileInputStream包装为InputStreamReader并以utf-8编码用于读取filepath下的文件
 #### OutputStreamWriter
 + new OutputStreamWriter(new FileOutputStream("filepath","gbk")) //将FileOutputStream包装为OutputStreamWriter并以gbk编码用于向filepath下的文件写入数据。
+
+# Stream API 流
++ 流：数据管道，仅处理移动数据，不存储数据，包括顺序流、并行流。
++ 创建一个流
+  - `Stream <Integer> stream = Stream.of(1,2,3,4,5,6,7,8,9,10);` //创建一个流
+  - `Stream <Integer> stream = Arrays.stream(arr1);`//利用数组创建一个流
+  - `IntStream  stream =IntStream.of(1,2,3)` //基本类型创建一个流，不使用包装类
+## 常用方法
++ filter(W->w.length>3) //仅保留长度大于3的字符串：过滤
++ map(W->w.length()) //获取字符串长度：转换
++ concat(stream1,stream2) //流连接：
++ distinct()去重：底层调用.equals()方法
++ max()/min() //最大最小值
++ skip(2) //跳过前两个元素
+  - 
++ toArray() //将流转换为数组
+  - steam1.mapToInt(Integer::parseInt).toArray();
+  - stream.toArray(String[]::new);
++ limit(10) //限制流大小
++ sorted() //排序
++ count() //计数
++ reduce((x,y) -> x+y) //归约
++ collect(Collectors.toList()) //将流转换为list(元素是object型)
+  - stream.collect(Collectors.toCollection(HashSet::new)) //将流转换为set
++ forEach(System.out::println)// 遍历
++ paralellStream() //创建并行流
++ parallel() //将串行流转换为并行流
 
 # **Java网络编程**
 ## 网络基础
@@ -1313,3 +1565,115 @@ conn.close();//关闭数据库连接。
     - 导入jar包，直接复制到项目中即可，使用请查看文档。 
   - DBCP:
   - C3P0:
+
+
+
+
+# 设计模式及其应用
+## 备忘录模式
++ 创建一个备忘录类，用于保存对象的状态。
+## 代理模式
++ 创建一个代理类，用于访问目标对象，用户不直接访问目标对象，而是通过代理类来访问目标对象。
+## 单例模式
++ 一个类仅有一个实例，能自行创建实例，对为提供一个全局访问点。
+  - 懒汉式：加载类时不创建实例，在第一次使用时创建实例。
+  - 饿汉式：加载类时创建实例。
+## 迭代式模式
++ 抽象聚合：定义创建迭代器对象的接口。
+  + 具体聚合：实现抽象聚合接口，创建具体迭代器对象。
+## 访问器模式：访问对象固定，而访问方式多种的情况下使用 
++ 抽象访问者：定义访问者可以访问哪些元素。
+  + 具体访问者：实现抽象访问者接口，定义访问元素的具体行为。  
++ 抽象元素：定义接受访问者的方法。
+  + 具体元素：实现抽象元素接口，定义接受访问者的具体行为。
+## 发布订阅模式(观察者模式)：检测到对象状态变化时，做出对应的行为
++ 抽象主题：定义添加、删除观察者的方法，以及通知观察者的方法。
+  + 具体主题：实现抽象主题接口，维护观察者列表，并实现通知观察者的方法。
++ 抽象观察者：定义更新方法，当主题状态变化时，被主题调用。
+  + 具体观察者：实现抽象观察者接口，实现更新方法。
+## 解释器模式：问题多次出现，且每次问题的处理方式相似，但处理方式又不同时使用
++ 环境类：定义解释器需要的上下文信息。
++ 抽象表达式：定义解释器的接口。
+  + 具体表达式：实现抽象表达式接口，定义解释器的具体行为。
+## 命令模式：将请求封装为一个对象，使发出请求的对象和执行请求的对象解耦
++ 调用者类：创建命令对象，并调用命令对象的执行方法。
++ 命令接口：定义命令的接口。
+  + 具体命令类：实现命令接口，定义命令的具体行为（可通过创建不同的接收者对象，来执行不同命令）
++ 接收者类：具体执行命令的行为
+## 模板方法模式：提取共同的逻辑形成模板，将不同的逻辑交给子类实现
++ 抽象模板类：定义模板方法，定义抽象方法，子类必须实现。
+  + 具体模板类：实现抽象模板类，实现抽象方法。
+## 桥接模式：将抽象部分与它的实现部分分离，使它们可以独立变化。
++ 抽象化角色：定义抽象类，包含一个实现化对象的引用。
++ 扩展抽象化角色：继承抽象化角色，增加新的行为。
++ 实现化角色：定义实现化接口。
+  + 具体实现化角色：实现实现化接口，定义具体行为。
+## 适配器模式：转换接口，使原本不兼容的接口能够协同工作。
++ 目标：目标接口
++ 适配者：被适配的类
++ 适配器：实现目标接口，包含适配者对象，调用适配者的方法。
+## 外观模式：定义一个高层接口，统一管理子系统
++ 外观类：包含子系统的引用，定义高层接口，调用子系统的方法。
++ 子系统类：定义子系统的接口，实现子系统的具体行为。
+## 享元模式：通过共享对象来减少内存使用，提高性能
++ 抽象享元类：定义享元对象的接口。
+  + 具体享元类：实现抽象享元类，定义享元对象的具体行为（共享对象）
++ 享元工厂类：创建享元对象，管理享元对象。
+## 原型模式：通过复制来创建新对象，减少创建新对象的成本。
++ 抽象原型类：定义复制方法。
+  + 具体原型类：实现抽象原型类，定义复制方法。
++ 访问类：通过调用原型对象的复制方法来创建新对象。
+## 责任链模式：将请求沿着处理链传递，直到请求被处理。
++ 抽象处理者类：定义处理请求的方法，包含后继处理者的引用。
+  + 具体处理者类：实现抽象处理者类，定义处理请求的具体行为，并调用后继处理者的处理请求的方法。
+## 中介者模式：通过中介者对象来协调各个对象之间的交互，降低耦合度
++ 抽象中介者类：定义中介者对象的方法，包含同事对象的引用。
+  + 具体中介者类：实现抽象中介者类，定义中介者对象的具体行为。
++ 抽象同事类：定义同事对象的方法，包含中介者对象的引用。
+  + 具体同事类：实现抽象同事类，定义同事对象的具体行为，并调用中介者对象的方法。
+## 状态模式：通过改变对象的状态来改变对象的行为。
++ 抽象状态类：定义状态对象的方法。
+  + 具体状态类：实现抽象状态类，定义状态对象的具体行为。
++ 环境类：定义环境对象的方法，包含状态对象的引用。
+  + 具体环境类：实现环境类，定义环境对象的具体行为，并调用状态对象的方法。
+## 组合模式：将对象组合成树形结构，以表示“部分-整体”的层次结构。
++ 抽象构件：定义公共的接口，包含添加、删除子构件的方法，以及获取子构件的方法。
+  + 叶子构件：实现抽象构件接口，没有子构件。
+  + 分支构件：实现抽象构件接口，包含子构件的列表，实现添加、删除子构件的方法，以及获取子构件的方法。
+## 修饰器模式：动态地给对象添加新的功能，不改变其结构
++ 处理流为例,RDD、IO流都使用了此装饰器模式）
++ 1、设计抽象类 
++ 2、设计继承抽象类的处理不同情况的处理子类 
++ 3、设计处理类，处理类中包含一个抽象类的对象，通过调用抽象类的方法实现处理。**Java是单继承的**
+## 简单工厂：
++ 创建一个父类和多个子类，利用java的多态解决问题。
+## 策略模式：
++ 策略类：定义所有支持的算法的公共接口。
++ 具体策略类：实现公共接口，提供具体算法实现。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
